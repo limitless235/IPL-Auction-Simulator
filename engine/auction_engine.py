@@ -1,7 +1,7 @@
 import json
 from typing import Dict, Any, Tuple
 from .state import AuctionState, ActionResponse, BidAction, Player, Team
-
+MAX_BIDDING_ROUNDS = 25
 class AuctionEngine:
     def __init__(self, initial_state: AuctionState):
         self.state = initial_state
@@ -89,6 +89,10 @@ class AuctionEngine:
         self.state.highest_bidder = team_id
         self.state.current_bid = bid_amount
         self.state.bidding_rounds += 1
+        if self.state.bidding_rounds >= MAX_BIDDING_ROUNDS:
+        # Force sale to current highest bidder by clearing active bidders
+            self.state.active_bidders = []
+
         return self._format_response("OK")
 
     def next_player(self) -> str:
