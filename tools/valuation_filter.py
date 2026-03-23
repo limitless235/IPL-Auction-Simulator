@@ -61,10 +61,8 @@ class ValuationFilter:
         max_price = int(base_val * (1 + self.personality["aggression"] * 0.5))
 
         # Hard cap at price_tolerance * remaining_budget
-        slots_remaining = max(1, self.team.min_squad_size - self.team.squad_size)
-        per_slot_budget = self.team.remaining_budget / slots_remaining
-        max_price = min(max_price, int(per_slot_budget * self.personality["price_tolerance"]))
-
+        # Cap at 30% of total budget for any single player
+        max_price = min(max_price, int(self.team.total_budget * 0.28 * self.personality["price_tolerance"]))
 
         return max_price
 
