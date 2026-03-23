@@ -80,7 +80,15 @@ class AuctionOrchestrator:
 
                 if current_team_id == self.human_team_id:
                     human = HumanAgent(self.human_team_id)
-                    action = human.make_decision(player.name, state.current_bid)
+                    from engine.auction_engine import get_next_bid
+                    next_bid = get_next_bid(state.current_bid)
+                    action = human.make_decision(
+                        player,
+                        state.current_bid,
+                        next_bid,
+                        agent_team.remaining_budget if (agent_team := self.engine.state.teams.get(current_team_id)) else 0,
+                        self.engine.state.teams.get(current_team_id).squad_size
+                    )
                     self._apply_and_retry(current_team_id, action.decision, test_mode)
                     continue
 
@@ -98,7 +106,9 @@ class AuctionOrchestrator:
                     continue
 
                 self._log_test(test_mode, f"{current_team_id} Calling LLM...", "")
-                decision = agent.make_decision(player, state.current_bid, scarcity)
+                total_players = len(self.engine.state.unsold_players) + len(self.engine.state.sold_players) + len(self.engine.state.truly_unsold_players)
+                auction_progress = len(self.engine.state.sold_players) / max(total_players, 1)
+                decision = agent.make_decision(player, state.current_bid, scarcity, auction_progress)
                 self._log_test(test_mode, f"LLM Decision {current_team_id}", str(decision))
                 self._apply_and_retry(current_team_id, decision.decision, test_mode)
 
