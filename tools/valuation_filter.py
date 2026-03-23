@@ -13,13 +13,13 @@ class ValuationFilter:
 
     def calculate_max_price(self) -> int:
         # Tier-based market valuation
-        tier_base = {1: 150000000, 2: 80000000, 3: 30000000, 4: 10000000}
+        tier_base = {1: 80000000, 2: 40000000, 3: 15000000, 4: 5000000}
         base_val = tier_base.get(self.player.tier, 30000000)
 
         # Star and brand value boost
         if self.player.is_star:
-            base_val += int(self.personality["star_bias"] * 100000000)
-        base_val += int(self.player.brand_value * self.personality["star_bias"] * 50000000)
+            base_val += int(self.personality["star_bias"] * 40000000)
+        base_val += int(self.player.brand_value * self.personality["star_bias"] * 20000000)
 
         # Recent form adjustment
         form_multiplier = 0.7 + (self.player.recent_form * 0.6)
@@ -61,8 +61,10 @@ class ValuationFilter:
         max_price = int(base_val * (1 + self.personality["aggression"] * 0.5))
 
         # Hard cap at price_tolerance * remaining_budget
-        max_price = min(max_price,
-            int(self.team.remaining_budget * self.personality["price_tolerance"]))
+        slots_remaining = max(1, self.team.min_squad_size - self.team.squad_size)
+        per_slot_budget = self.team.remaining_budget / slots_remaining
+        max_price = min(max_price, int(per_slot_budget * self.personality["price_tolerance"]))
+
 
         return max_price
 

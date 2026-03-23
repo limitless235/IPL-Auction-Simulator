@@ -1,21 +1,76 @@
 import json
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, List
 from .state import AuctionState, ActionResponse, BidAction, Player, Team
 
 MAX_BIDDING_ROUNDS = 60
 
+
+def sort_players_for_auction(players: List[Player]) -> List[Player]:
+    from engine.state import Player
+    seen = set()
+    result = []
+
+    def add_group(group):
+        for p in group:
+            if p.id not in seen:
+                result.append(p)
+                seen.add(p.id)
+
+    def sort_key(p):
+        return (-p.brand_value, -p.recent_form)
+
+    def get(role=None, tier=None, nationality=None, pace=None, spin=None, tiers=None):
+        out = []
+        for p in players:
+            if p.id in seen:
+                continue
+            if role and p.role != role:
+                continue
+            if tier and p.tier != tier:
+                continue
+            if tiers and p.tier not in tiers:
+                continue
+            if nationality and p.nationality != nationality:
+                continue
+            if pace is not None and p.pace_bowler != pace:
+                continue
+            if spin is not None and p.spin_bowler != spin:
+                continue
+            out.append(p)
+        return sorted(out, key=sort_key)
+
+    # Marquee sets
+    add_group(get(tier=1, nationality="indian")[:6])
+    add_group(get(tier=1, nationality="overseas")[:6])
+
+    # Capped sets (tier 2)
+    for role in ["batter", "all_rounder", "wicket_keeper"]:
+        add_group(get(role=role, tier=2, nationality="indian"))
+        add_group(get(role=role, tier=2, nationality="overseas"))
+
+    add_group(get(role="bowler", tier=2, pace=True, nationality="indian"))
+    add_group(get(role="bowler", tier=2, pace=True, nationality="overseas"))
+    add_group(get(role="bowler", tier=2, spin=True, nationality="indian"))
+    add_group(get(role="bowler", tier=2, spin=True, nationality="overseas"))
+
+    # Uncapped sets (tier 3 and 4)
+    for role in ["batter", "all_rounder", "wicket_keeper"]:
+        add_group(get(role=role, tiers=[3, 4], nationality="indian"))
+        add_group(get(role=role, tiers=[3, 4], nationality="overseas"))
+
+    add_group(get(role="bowler", tiers=[3, 4], pace=True, nationality="indian"))
+    add_group(get(role="bowler", tiers=[3, 4], pace=True, nationality="overseas"))
+    add_group(get(role="bowler", tiers=[3, 4], spin=True, nationality="indian"))
+    add_group(get(role="bowler", tiers=[3, 4], spin=True, nationality="overseas"))
+
+    # Accelerated phase — anything remaining
+    remaining = [p for p in players if p.id not in seen]
+    add_group(sorted(remaining, key=lambda p: (p.tier, -p.brand_value)))
+
+    return result
+
+
 def get_next_bid(current_bid: int) -> int:
-    """
-    Returns the next valid bid amount following official IPL auction increment rules.
-    All amounts are in INR (Indian Rupees).
-    Ladder:
-    - current_bid < 10000000 (1 Cr): increment by 500000 (5L)
-    - 10000000 <= current_bid < 20000000 (1-2 Cr): increment by 1000000 (10L)
-    - 20000000 <= current_bid < 50000000 (2-5 Cr): increment by 2000000 (20L)
-    - 50000000 <= current_bid < 100000000 (5-10 Cr): increment by 2500000 (25L)
-    - 100000000 <= current_bid < 200000000 (10-20 Cr): increment by 5000000 (50L)
-    - current_bid >= 200000000 (20 Cr+): increment by 10000000 (1 Cr)
-    """
     if current_bid < 10000000:
         return current_bid + 500000
     elif current_bid < 20000000:
@@ -29,17 +84,19 @@ def get_next_bid(current_bid: int) -> int:
     else:
         return current_bid + 10000000
 
+
 class AuctionEngine:
     def __init__(self, initial_state: AuctionState):
         self.state = initial_state
 
     def start_auction(self) -> str:
-        """Starts the auction by setting the first player and active bidders."""
         if not self.state.unsold_players:
             self.state.is_auction_complete = True
             return self.get_state_json()
-        
-        # Load the next player if none is active
+
+        # >>> NEW: Apply IPL auction ordering
+        self.state.unsold_players = sort_players_for_auction(self.state.unsold_players)
+
         if not self.state.current_player:
             player = self.state.unsold_players.pop(0)
             self._setup_next_player(player)
@@ -50,7 +107,6 @@ class AuctionEngine:
         self.state.current_player = player
         self.state.current_bid = player.base_price
         self.state.highest_bidder = None
-        # Only teams that have budget >= base_price and space in squad can bid initially
         self.state.active_bidders = [
             t_id for t_id, t in self.state.teams.items()
             if t.remaining_budget >= player.base_price and t.squad_size < t.max_squad_size
@@ -58,10 +114,6 @@ class AuctionEngine:
         self.state.bidding_rounds = 0
 
     def apply_action(self, action_dict: Dict[str, Any]) -> str:
-        """
-        Receives an action, validates it, and updates state.
-        Returns a JSON string containing {"status": "OK"|"ERROR", "error_msg": ..., "state": ...}
-        """
         try:
             action = BidAction(**action_dict)
         except Exception as e:
@@ -82,7 +134,7 @@ class AuctionEngine:
 
         if action.action_type == "BID":
             return self._handle_bid(action.team_id)
-            
+
         return self._format_response("ERROR", f"Unsupported action_type: {action.action_type}")
 
     def _handle_pass(self, team_id: str) -> str:
@@ -104,13 +156,11 @@ class AuctionEngine:
         if team.squad_size >= team.max_squad_size:
             return self._format_response("ERROR", "Team squad is already full.")
 
-        # >>> CHANGE 1: Overseas slot enforcement
         player = self.state.current_player
         if player.nationality == "overseas":
             if team.overseas_slots_used >= 4:
                 return self._format_response("ERROR",
                     "Team has no overseas slots remaining.")
-        # <<< CHANGE 1
 
         self.state.highest_bidder = team_id
         self.state.current_bid = next_bid
@@ -118,44 +168,36 @@ class AuctionEngine:
         return self._format_response("OK")
 
     def next_player(self) -> str:
-        """Resolves the current player (sold/unsold) and moves to the next."""
         if not self.state.current_player:
             return self._format_response("ERROR", "No active player to resolve.")
 
         player = self.state.current_player
-        
-        # Resolve sale
+
         if self.state.highest_bidder:
             winning_team = self.state.teams[self.state.highest_bidder]
-            # Deduct budget & assign player
             winning_team.remaining_budget -= self.state.current_bid
             winning_team.squad[player.id] = self.state.current_bid
             winning_team.squad_size += 1
             winning_team.roles_count[player.role] += 1
 
-            # >>> CHANGE 2: Track overseas slots
             if player.nationality == "overseas":
                 winning_team.overseas_slots_used += 1
-            # <<< CHANGE 2
 
             self.state.sold_players.append(player)
         else:
             self.state.truly_unsold_players.append(player)
 
-        # Check end condition
         all_squads_full = all(t.squad_size >= t.max_squad_size for t in self.state.teams.values())
         if not self.state.unsold_players or all_squads_full:
             self.state.current_player = None
             self.state.is_auction_complete = True
             return self._format_response("OK")
 
-        # Setup next
         next_p = self.state.unsold_players.pop(0)
         self._setup_next_player(next_p)
         return self._format_response("OK")
 
     def end_auction(self) -> str:
-        """Forces the auction to end."""
         self.state.is_auction_complete = True
         self.state.current_player = None
         self.state.active_bidders = []
@@ -169,7 +211,7 @@ class AuctionEngine:
 
     def _format_response(self, status: str, error_msg: str = None) -> str:
         resp = ActionResponse(status=status, error_msg=error_msg)
-        
+
         data = {
             "status": resp.status,
             "error_msg": resp.error_msg,
