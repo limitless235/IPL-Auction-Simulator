@@ -140,7 +140,7 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed 
   const currentBid = auction?.current_bid || 0;
   const leadingTeam = auction?.current_bid_team;
   const isHumanTurn = auction?.human_action_pending && humanTeam;
-  const nextBid = currentBid ? Math.round(currentBid * 1.1) : player?.base_price || 0;
+  const nextBid = auction?.next_bid || (currentBid ? Math.round(currentBid * 1.1) : player?.base_price || 0);
   const speed = auction?.speed || "normal";
 
   if (!player) return (
@@ -294,11 +294,19 @@ export default function App() {
       if (msg.data.feed) setFeed(msg.data.feed);
     } else if (msg.type === "auction_started") {
       setSetupMode(false);
-    } else if (msg.type === "bid_placed" || msg.type === "player_sold") {
+    } else if (msg.type === "bid_placed" || msg.type === "player_sold" || msg.type === "player_unsold") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, ...msg } }));
-      setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type }, ...prev].slice(0, 10));
+      if (msg.text) {
+          setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type || "info" }, ...prev].slice(0, 50));
+      }
     } else if (msg.type === "speed_changed") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, speed: msg.speed } }));
+    } else if (msg.type === "auction_paused" || msg.type === "auction_resumed") {
+      setState(prev => ({ ...prev, auction: { ...prev?.auction, status: msg.type === "auction_paused" ? "paused" : "running" } }));
+    } else if (msg.type === "auction_finished") {
+      setState(prev => ({ ...prev, auction: { ...prev?.auction, status: "finished" } }));
+    } else if (msg.type === "human_decision_needed") {
+      setState(prev => ({ ...prev, auction: { ...prev?.auction, human_action_pending: true } }));
     }
   }, []);
 
@@ -403,7 +411,7 @@ export default function App() {
           }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🏏</div>
             <div style={{ fontSize: 26, fontWeight: 800, color: "#f8fafc", marginBottom: 8 }}>IPL Auction 2025</div>
-            <div style={{ fontSize: 14, color: "#64748b", marginBottom: 32 }}>228 players · 10 teams · ₹1200L budget each</div>
+            <div style={{ fontSize: 14, color: "#64748b", marginBottom: 32 }}>221 players · 10 teams · ₹1200L budget each</div>
 
             <div style={{ marginBottom: 20, textAlign: "left" }}>
               <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 6 }}>Play as a team (optional)</label>
@@ -488,7 +496,7 @@ export default function App() {
                       <TeamCard
                         key={t.name} team={t}
                         isHuman={t.name === auction.human_team}
-                        isHighBidder={t.name === auction.current_bid_team}
+                        isHighBidder={t.short === auction.current_bid_team}
                         isSelected={t.name === activeTeamForSquad}
                         onClick={() => setSelectedTeam(t.name)}
                       />

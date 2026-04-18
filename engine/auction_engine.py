@@ -136,7 +136,7 @@ class AuctionEngine:
             return self._handle_pass(action.team_id)
 
         if action.action_type == "BID":
-            return self._handle_bid(action.team_id)
+            return self._handle_bid(action.team_id, action.amount)
 
         return self._format_response("ERROR", f"Unsupported action_type: {action.action_type}")
 
@@ -145,15 +145,22 @@ class AuctionEngine:
             self.state.active_bidders.remove(team_id)
         return self._format_response("OK")
 
-    def _handle_bid(self, team_id: str) -> str:
+    def _handle_bid(self, team_id: str, amount: int = None) -> str:
         team = self.state.teams[team_id]
 
         if team_id not in self.state.active_bidders:
             return self._format_response("ERROR", "Team is not an active bidder.")
 
         next_bid = get_next_bid(self.state.current_bid)
+        
+        if amount is not None:
+            if amount < next_bid:
+                return self._format_response("ERROR", f"Custom bid {amount} is less than required minimum {next_bid}.")
+            actual_bid = amount
+        else:
+            actual_bid = next_bid
 
-        if next_bid > team.remaining_budget:
+        if actual_bid > team.remaining_budget:
             return self._format_response("ERROR", "Next bid increment exceeds remaining budget.")
 
         if team.squad_size >= team.max_squad_size:
@@ -166,7 +173,7 @@ class AuctionEngine:
                     "Team has no overseas slots remaining.")
 
         self.state.highest_bidder = team_id
-        self.state.current_bid = next_bid
+        self.state.current_bid = actual_bid
         self.state.bidding_rounds += 1
         return self._format_response("OK")
 

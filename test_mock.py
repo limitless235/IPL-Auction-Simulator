@@ -6,7 +6,7 @@ from agents.orchestrator import AuctionOrchestrator
 from store.memory import MemoryStore
 
 def build_mock_state() -> AuctionState:
-    team_ids = ["MI", "CSK", "RCB", "KKR", "DC", "PBKS", "RR", "SRH", "GT"]
+    team_ids = ["MI", "CSK", "RCB", "KKR", "DC", "PBKS", "RR", "SRH", "GT", "LSG"]
     teams = {}
     for team_id in team_ids:
         teams[team_id] = Team(id=team_id, name=team_id, squad={})

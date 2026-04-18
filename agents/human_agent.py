@@ -1,9 +1,11 @@
+from typing import Optional
 from engine.state import Player
 from pydantic import BaseModel
 
 
 class HumanDecision(BaseModel):
     decision: str  # "BID" or "PASS"
+    amount: Optional[int] = None
 
 
 class HumanAgent:
@@ -34,7 +36,8 @@ class HumanAgent:
         main_module.human_action_event.wait()
         
         action_val = main_module.human_action_value["action"].upper()
-        # if amount is custom, we might want to override, but the orchestration logic 
-        # normally handles BID vs PASS logic cleanly.
+        amount_val = main_module.human_action_value.get("amount")
+        if amount_val is not None:
+            amount_val = amount_val * 100000
         
-        return HumanDecision(decision=action_val)
+        return HumanDecision(decision=action_val, amount=amount_val)

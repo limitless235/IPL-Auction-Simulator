@@ -40,6 +40,7 @@ auction_state = {
     "human_team": None,
     "human_action_pending": False,
     "speed": "normal", # "normal" | "fast"
+    "feed": [],
 }
 
 _auction_state: Optional[AuctionState] = None
@@ -58,6 +59,15 @@ async def on_startup():
     _main_loop = asyncio.get_running_loop()
 
 def sync_broadcast(payload: dict):
+    from datetime import datetime
+    if payload.get("type") in ("bid_placed", "player_sold", "player_unsold"):
+        auction_state["feed"].insert(0, {
+            "time": datetime.now().strftime("%I:%M %p"),
+            "text": payload.get("text", ""),
+            "type": payload.get("event_type", "info")
+        })
+        auction_state["feed"] = auction_state["feed"][:50] # keep last 50
+    
     if _main_loop and _main_loop.is_running():
         asyncio.run_coroutine_threadsafe(broadcast(payload), _main_loop)
     else:
@@ -150,7 +160,12 @@ async def start_auction(req: StartRequest):
             engine=engine,
             team_agents=team_agents,
             human_team_id=mapped_team_id,
-            memory=memory
+            memory=memory,
+            broadcast_cb=sync_broadcast,
+            snapshot_cb=send_state_snapshot,
+            is_paused_cb=lambda: auction_state["status"] == "paused",
+            is_human_pending_cb=lambda: auction_state.get("human_action_pending", False),
+            get_speed_cb=lambda: auction_state.get("speed", "normal")
         )
         
         _auction_state = engine.state
@@ -232,6 +247,10 @@ async def get_full_state():
     
     auction_state["current_bid"] = round(_auction_state.current_bid / 100000) if getattr(_auction_state, "current_bid", 0) else 0
     auction_state["current_bid_team"] = getattr(_auction_state, "highest_bidder", None)
+    
+    from engine.auction_engine import get_next_bid
+    next_bid_val = get_next_bid(_auction_state.current_bid) if _auction_state.current_bid else (_auction_state.current_player.base_price if _auction_state.current_player else 0)
+    auction_state["next_bid"] = round(next_bid_val / 100000)
         
     def get_sold_player_info(pid: str):
         sold_list = list(_auction_state.sold_players)
@@ -276,17 +295,20 @@ async def get_full_state():
 
 @app.get("/state/teams")
 async def get_teams():
-    return _stub_teams()
+    if _auction_state is None: return _stub_teams()
+    return (await get_full_state())["teams"]
 
 
 @app.get("/state/players/remaining")
 async def get_remaining_players():
-    return _stub_remaining_players()
+    if _auction_state is None: return _stub_remaining_players()
+    return (await get_full_state())["players_remaining"]
 
 
 @app.get("/state/players/sold")
 async def get_sold_players():
-    return _stub_sold_players()
+    if _auction_state is None: return _stub_sold_players()
+    return (await get_full_state())["players_sold"]
 
 
 @app.get("/state/summary")

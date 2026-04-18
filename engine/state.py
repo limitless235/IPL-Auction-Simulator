@@ -58,6 +58,7 @@ class Team(BaseModel):
 class BidAction(BaseModel):
     action_type: Literal["START", "BID", "PASS", "NEXT"]
     team_id: str
+    amount: Optional[int] = None
     
 
 class ActionResponse(BaseModel):
