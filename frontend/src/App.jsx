@@ -182,7 +182,7 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed 
           <div style={{ fontSize: 11, color: "#6366f1", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
             {isHumanTurn ? "⚡ Your Turn" : "🔴 Live Now"}
           </div>
-          {!isHumanTurn && auction?.status === "running" && (
+          {!humanTeam && (
             <button onClick={onToggleSpeed} style={{
               background: speed === "fast" ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.05)",
               border: `1px solid ${speed === "fast" ? "rgba(245,158,11,0.4)" : "rgba(255,255,255,0.1)"}`,

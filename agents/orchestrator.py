@@ -26,6 +26,15 @@ class AuctionOrchestrator:
         resp = self.engine.start_auction()
         self._log_test(test_mode, "AUCTION START", resp)
 
+        self._run_bidding_loop(test_mode)
+
+        # --- ACCELERATED PHASE ---
+        self._run_accelerated_phase(test_mode)
+
+        print("=== FULL AUCTION COMPLETE ===")
+
+    def _run_bidding_loop(self, test_mode: bool = False):
+        """Core bidding loop — shared between main auction and accelerated phase."""
         while True:
             if self.is_paused_cb and self.is_paused_cb():
                 time.sleep(1)
@@ -34,7 +43,7 @@ class AuctionOrchestrator:
             state = self.engine.get_state()
 
             if state.is_auction_complete:
-                print("AUCTION COMPLETE.")
+                print("MAIN PHASE COMPLETE." if not state.is_accelerated_phase else "ACCELERATED PHASE COMPLETE.")
                 break
 
             if not state.current_player:
@@ -47,7 +56,12 @@ class AuctionOrchestrator:
             current_bid = state.current_bid
             bidding_rounds = state.bidding_rounds
 
-            
+            # In accelerated phase, enforce a hard round limit (simulated 60-second timer)
+            if state.is_accelerated_phase and bidding_rounds >= 15:
+                # Force resolve — time's up
+                for t_id in list(state.active_bidders):
+                    if t_id != state.highest_bidder:
+                        self.engine.apply_action({"action_type": "PASS", "team_id": t_id})
 
             active = list(state.active_bidders)
 
@@ -58,7 +72,7 @@ class AuctionOrchestrator:
                         self.broadcast_cb({
                             "type": "player_unsold",
                             "player": player.name,
-                            "text": f"{player.name} went UNSOLD",
+                            "text": f"{player.name} went UNSOLD" + (" (Accelerated)" if state.is_accelerated_phase else ""),
                             "event_type": "unsold"
                         })
                 self.engine.next_player()
@@ -71,7 +85,7 @@ class AuctionOrchestrator:
                 continue
 
             if len(active) == 1 and state.highest_bidder == active[0]:
-                # --- NEW RTM LOGIC ---
+                # --- RTM LOGIC ---
                 rtm_team_id = state.rtm_history.get(player.name)
                 if rtm_team_id and rtm_team_id != state.highest_bidder:
                     rtm_agent = self.team_agents.get(rtm_team_id)
@@ -97,7 +111,7 @@ class AuctionOrchestrator:
                         "player": player.name,
                         "team": state.highest_bidder,
                         "price": round(current_bid / 100000),
-                        "text": f"{player.name} SOLD to {state.highest_bidder} for ₹{round(current_bid / 100000)}L",
+                        "text": f"{player.name} SOLD to {state.highest_bidder} for ₹{round(current_bid / 100000)}L" + (" (Accelerated)" if state.is_accelerated_phase else ""),
                         "event_type": "sold"
                     })
                 self.engine.next_player()
@@ -180,6 +194,75 @@ class AuctionOrchestrator:
 
                 self._log_test(test_mode, f"LLM Decision {current_team_id}", str(decision))
                 self._apply_and_retry(current_team_id, decision.decision, test_mode, amount=getattr(decision, 'amount', None))
+
+    def _run_accelerated_phase(self, test_mode: bool = False):
+        """Accelerated phase: teams shortlist unsold players for a second chance auction."""
+        state = self.engine.get_state()
+        unsold_pool = list(state.truly_unsold_players)
+        
+        if not unsold_pool:
+            print("[ACCELERATED] No unsold players to re-auction.")
+            return
+            
+        # Check if any team still has capacity
+        all_full = all(t.squad_size >= t.max_squad_size for t in state.teams.values())
+        if all_full:
+            print("[ACCELERATED] All squads full. Skipping accelerated phase.")
+            return
+
+        print(f"\n{'='*60}")
+        print(f"  ACCELERATED PHASE — {len(unsold_pool)} unsold players available")
+        print(f"{'='*60}\n")
+
+        if self.broadcast_cb:
+            self.broadcast_cb({
+                "type": "phase_change",
+                "phase": "accelerated",
+                "text": f"⚡ ACCELERATED PHASE — {len(unsold_pool)} unsold players available for re-auction",
+                "event_type": "info"
+            })
+
+        # Collect shortlists from each team
+        shortlisted_names = set()
+        for team_id, agent in self.team_agents.items():
+            names = agent.submit_accelerated_shortlist(unsold_pool, state)
+            if names:
+                print(f"  {team_id} shortlists: {names}")
+                shortlisted_names.update(names)
+        
+        # Human team shortlist — if human is playing, include top 5 unsold by brand value
+        if self.human_team_id:
+            human_picks = sorted(unsold_pool, key=lambda p: (-p.brand_value, -p.recent_form))[:5]
+            shortlisted_names.update(p.name for p in human_picks)
+
+        if not shortlisted_names:
+            print("[ACCELERATED] No team shortlisted any player. Phase skipped.")
+            return
+
+        # Filter unsold pool to only shortlisted players
+        accelerated_players = [p for p in unsold_pool if p.name in shortlisted_names]
+        
+        # Mark them for analytics and reset for re-entry
+        for p in accelerated_players:
+            p.accelerated_phase = True
+            # Remove from truly_unsold so they can re-enter
+            if p in state.truly_unsold_players:
+                state.truly_unsold_players.remove(p)
+
+        print(f"  {len(accelerated_players)} players re-entering auction (from {len(unsold_pool)} unsold)")
+
+        # Re-inject into the engine at base price
+        from engine.auction_engine import get_minimum_bid
+        state.unsold_players = accelerated_players
+        state.is_auction_complete = False
+        state.is_accelerated_phase = True
+        state.current_player = None
+
+        if self.snapshot_cb:
+            self.snapshot_cb()
+
+        # Run the bidding loop again for the accelerated players
+        self._run_bidding_loop(test_mode)
 
     def _apply_and_retry(self, team_id: str, decision: str, test_mode: bool, amount: int = None):
         action_payload = {

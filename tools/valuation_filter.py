@@ -222,7 +222,7 @@ class ValuationFilter:
         max_price = max_price_override if max_price_override is not None else self.calculate_max_price()
         
         if self.team.squad_size >= 6 and self.team.roles_count.get(self.player.role, 0) == 0:
-            return Fal
+            return False
 
         if current_bid > max_price:
             return True

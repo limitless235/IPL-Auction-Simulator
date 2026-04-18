@@ -24,6 +24,7 @@ class Player(BaseModel):
     previous_team: str = "unsold"
     specialist_tags: List[str] = Field(default_factory=list)
     hype_score: float = 0.0
+    accelerated_phase: bool = False
 
 
 class Team(BaseModel):
@@ -99,3 +100,4 @@ class AuctionState(BaseModel):
     truly_unsold_players: List[Player] = Field(default_factory=list)
     
     is_auction_complete: bool = False
+    is_accelerated_phase: bool = False

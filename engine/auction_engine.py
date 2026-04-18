@@ -73,19 +73,65 @@ def sort_players_for_auction(players: List[Player]) -> List[Player]:
     return result
 
 
-def get_next_bid(current_bid: int) -> int:
-    if current_bid < 10000000:
-        return current_bid + 500000
-    elif current_bid < 20000000:
-        return current_bid + 1000000
-    elif current_bid < 50000000:
-        return current_bid + 2000000
-    elif current_bid < 100000000:
-        return current_bid + 2500000
-    elif current_bid < 200000000:
-        return current_bid + 5000000
+def get_next_bid_increment(current_bid: int) -> int:
+    """Return the official IPL bid increment for a given current bid (in rupees).
+
+    The IPL uses strict slab-based increments. All slab boundaries
+    below are expressed in Lakhs for clarity, but the function
+    operates in raw rupees (1 Lakh = 100,000).
+
+    Official IPL slabs:
+        current_bid < ₹1 Cr  (< 100L)     → increment ₹5L
+        ₹1 Cr – ₹2 Cr   (100L – 200L)     → increment ₹10L
+        ₹2 Cr – ₹5 Cr   (200L – 500L)     → increment ₹20L
+        ₹5 Cr – ₹10 Cr  (500L – 1000L)    → increment ₹25L
+        ₹10 Cr – ₹20 Cr (1000L – 2000L)   → increment ₹50L
+        ≥ ₹20 Cr        (≥ 2000L)          → increment ₹100L
+
+    >>> get_next_bid_increment(5000000)   # 50L → 5L increment
+    500000
+    >>> get_next_bid_increment(10000000)  # 100L → 10L increment
+    1000000
+    >>> get_next_bid_increment(30000000)  # 300L → 20L increment
+    2000000
+    >>> get_next_bid_increment(75000000)  # 750L → 25L increment
+    2500000
+    >>> get_next_bid_increment(150000000) # 1500L → 50L increment
+    5000000
+    >>> get_next_bid_increment(250000000) # 2500L → 100L increment
+    10000000
+    """
+    bid_in_lakhs = current_bid / 100000
+
+    if bid_in_lakhs < 100:
+        return 500000       # 5 Lakh
+    elif bid_in_lakhs < 200:
+        return 1000000      # 10 Lakh
+    elif bid_in_lakhs < 500:
+        return 2000000      # 20 Lakh
+    elif bid_in_lakhs < 1000:
+        return 2500000      # 25 Lakh
+    elif bid_in_lakhs < 2000:
+        return 5000000      # 50 Lakh
     else:
-        return current_bid + 10000000
+        return 10000000     # 1 Crore
+
+
+def get_next_bid(current_bid: int) -> int:
+    """Returns the next valid bid amount (current + increment).
+
+    This is a convenience wrapper around get_next_bid_increment,
+    kept for backward compatibility with all existing call sites.
+    """
+    return current_bid + get_next_bid_increment(current_bid)
+
+
+def get_minimum_bid(player: Player) -> int:
+    """Returns the minimum opening bid for a player.
+
+    No player sells below ₹25 Lakhs regardless of their listed base price.
+    """
+    return max(player.base_price, 2500000)  # 25 Lakhs = 2,500,000
 
 
 def run_retention_phase(state: AuctionState, team_profiles: dict):

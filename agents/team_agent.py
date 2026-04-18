@@ -325,3 +325,37 @@ class TeamAgent:
         if score >= 0.5:
             return AgentDecision(decision="BID")
         return AgentDecision(decision="PASS")
+
+    def submit_accelerated_shortlist(self, unsold_players: list, state) -> list:
+        """Submit up to 5 player names from the unsold pool for the accelerated phase.
+        
+        Selection logic:
+        1. Prioritize players that fill the team's biggest role gaps
+        2. Among gap-fillers, prefer higher tier / brand value
+        3. If no gaps remain, pick best-value cheap players to fill squad depth
+        """
+        if self.team.squad_size >= self.team.max_squad_size:
+            return []  # Squad is full, no interest
+
+        # Score each unsold player by how much we need them
+        scored = []
+        for player in unsold_players:
+            # Hard filters — skip players we can't legally buy
+            if player.nationality == "overseas" and self.team.overseas_slots_used >= 8:
+                continue
+                
+            role_gap = self.get_role_gap(player.role)
+            # Composite score: role gap urgency + quality
+            quality = player.brand_value * 0.3 + (5 - player.tier) / 5 * 0.3 + player.recent_form * 0.2
+            urgency = role_gap * self.personality.get("role_urgency_weight", 0.7)
+            total = urgency + quality
+            
+            # Penalty for bits-and-pieces all-rounders
+            if "bits-and-pieces" in player.specialist_tags:
+                total *= 0.5
+                
+            scored.append((total, player.name))
+        
+        # Sort by score descending, take top 5
+        scored.sort(key=lambda x: -x[0])
+        return [name for _, name in scored[:5]]
