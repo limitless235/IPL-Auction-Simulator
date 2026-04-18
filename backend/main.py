@@ -169,6 +169,7 @@ async def start_auction(req: StartRequest):
         )
         
         _auction_state = engine.state
+        send_state_snapshot()
         orch.run_auction(test_mode=False)
         auction_state["status"] = "finished"
         sync_broadcast({"type": "auction_finished"})
