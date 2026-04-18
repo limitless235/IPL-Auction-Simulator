@@ -90,7 +90,7 @@ class TeamAgent:
         # Role gap urgency — core of the blueprint system
         # Higher gap = stronger need = higher score boost
         role_gap = self.get_role_gap(player.role)
-        score += role_gap * self.personality["role_urgency_weight"] * 0.6
+        score += role_gap * self.personality["role_urgency_weight"] * 1.2
 
         # Auction phase aggression
         if auction_progress < 0.33:
@@ -107,8 +107,8 @@ class TeamAgent:
             score += self.personality["star_bias"] * 0.35 + 0.25
         score += player.brand_value * self.personality["star_bias"] * 0.15
 
-        # Tier scoring - heavily buffed to ensure Elite Tier 1/2 don't go unsold
-        tier_score = {1: 0.40, 2: 0.25, 3: 0.05, 4: 0.0}
+        # Tier scoring - reduced to stop marquee players dominating
+        tier_score = {1: 0.15, 2: 0.10, 3: 0.05, 4: 0.0}
         score += tier_score.get(player.tier, 0.0)
 
         # Recent form

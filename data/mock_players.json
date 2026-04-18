@@ -285,7 +285,7 @@
         "recent_form": 0.5,
         "ipl_experience": 0,
         "specialist_tag": "utility",
-        "pace_bowler": false,
+        "pace_bowler": true,
         "spin_bowler": false
     },
     {
@@ -546,7 +546,7 @@
     {
         "id": "p33",
         "name": "Sameer Rizvi",
-        "role": "all_rounder",
+        "role": "batter",
         "base_price": 2000000,
         "is_star": false,
         "is_youth": true,
@@ -556,14 +556,14 @@
         "brand_value": 0.3,
         "recent_form": 0.6,
         "ipl_experience": 1,
-        "specialist_tag": "allrounder_bat",
+        "specialist_tag": "finisher",
         "pace_bowler": false,
         "spin_bowler": false
     },
     {
         "id": "p34",
         "name": "Ashutosh Sharma",
-        "role": "all_rounder",
+        "role": "batter",
         "base_price": 5000000,
         "is_star": false,
         "is_youth": false,
@@ -573,7 +573,7 @@
         "brand_value": 0.5,
         "recent_form": 0.75,
         "ipl_experience": 3,
-        "specialist_tag": "allrounder_bat",
+        "specialist_tag": "finisher",
         "pace_bowler": false,
         "spin_bowler": false
     },
@@ -609,7 +609,7 @@
         "ipl_experience": 0,
         "specialist_tag": "utility",
         "pace_bowler": false,
-        "spin_bowler": false
+        "spin_bowler": true
     },
     {
         "id": "p37",
@@ -642,7 +642,7 @@
         "recent_form": 0.5,
         "ipl_experience": 0,
         "specialist_tag": "utility",
-        "pace_bowler": false,
+        "pace_bowler": true,
         "spin_bowler": false
     },
     {
@@ -659,7 +659,7 @@
         "recent_form": 0.5,
         "ipl_experience": 0,
         "specialist_tag": "utility",
-        "pace_bowler": false,
+        "pace_bowler": true,
         "spin_bowler": false
     },
     {
@@ -677,7 +677,7 @@
         "ipl_experience": 0,
         "specialist_tag": "utility",
         "pace_bowler": false,
-        "spin_bowler": false
+        "spin_bowler": true
     },
     {
         "id": "p41",
@@ -915,12 +915,12 @@
         "ipl_experience": 10,
         "specialist_tag": "allrounder_bat",
         "pace_bowler": false,
-        "spin_bowler": false
+        "spin_bowler": true
     },
     {
         "id": "p55",
         "name": "Shahrukh Khan",
-        "role": "all_rounder",
+        "role": "batter",
         "base_price": 5000000,
         "is_star": false,
         "is_youth": false,
@@ -1033,7 +1033,7 @@
         "recent_form": 0.7,
         "ipl_experience": 4,
         "specialist_tag": "allrounder_bat",
-        "pace_bowler": false,
+        "pace_bowler": true,
         "spin_bowler": false
     },
     {
@@ -1731,7 +1731,7 @@
         "ipl_experience": 0,
         "specialist_tag": "utility",
         "pace_bowler": false,
-        "spin_bowler": false
+        "spin_bowler": true
     },
     {
         "id": "p103",
@@ -2105,7 +2105,7 @@
         "ipl_experience": 2,
         "specialist_tag": "allrounder_bat",
         "pace_bowler": false,
-        "spin_bowler": false
+        "spin_bowler": true
     },
     {
         "id": "p125",
@@ -2173,7 +2173,7 @@
         "ipl_experience": 0,
         "specialist_tag": "utility",
         "pace_bowler": false,
-        "spin_bowler": false
+        "spin_bowler": true
     },
     {
         "id": "p129",
@@ -2444,7 +2444,7 @@
         "recent_form": 0.5,
         "ipl_experience": 0,
         "specialist_tag": "utility",
-        "pace_bowler": false,
+        "pace_bowler": true,
         "spin_bowler": false
     },
     {

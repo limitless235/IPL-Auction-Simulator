@@ -97,6 +97,10 @@ class ValuationFilter:
         jitter = random.uniform(0.95, 1.05)
         max_price = int(max_price * jitter)
 
+        # Prevent false auto-pass on extremely empty squads that can afford base price
+        if self.team.squad_size < 15:
+            max_price = max(max_price, self.player.base_price)
+
         return max_price
 
     def _get_squad_need_score(self) -> float:
@@ -129,7 +133,12 @@ class ValuationFilter:
         # No budget for next bid
         from engine.auction_engine import get_next_bid
         next_bid = get_next_bid(current_bid)
-        if next_bid > self.team.remaining_budget:
+        
+        # Mathematical Budget Reserve check to guarantee playing 15
+        MIN_BASE_PRICE = 2000000
+        slots_to_minimum = max(0, 15 - (self.team.squad_size + 1))
+        required_reserve = slots_to_minimum * MIN_BASE_PRICE
+        if next_bid > (self.team.remaining_budget - required_reserve):
             return True
 
         # Budget pressure scaling
@@ -140,6 +149,11 @@ class ValuationFilter:
 
         # Max price check
         max_price = self.calculate_max_price()
+        
+        # Critical role desperation
+        if self.team.squad_size >= 6 and self.team.roles_count.get(self.player.role, 0) == 0:
+            return False # Bypass max_price check, we desperately need this role!
+
         if current_bid > max_price:
             return True
 
