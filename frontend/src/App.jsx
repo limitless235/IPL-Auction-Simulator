@@ -6,6 +6,19 @@ const WS_URL = "ws://localhost:8000/ws";
 const ROLE_COLOR = { BAT: "#3b82f6", BOWL: "#ef4444", ALL: "#f59e0b", WK: "#8b5cf6" };
 const ROLE_LABEL = { BAT: "Batter", BOWL: "Bowler", ALL: "All-rounder", WK: "Keeper" };
 
+function downloadCSV(filename, rows) {
+  const csvContent = rows.map(e => e.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 function useWebSocket(onMessage) {
   const wsRef = useRef(null);
   const [connected, setConnected] = useState(false);
@@ -297,7 +310,7 @@ export default function App() {
     } else if (msg.type === "bid_placed" || msg.type === "player_sold" || msg.type === "player_unsold") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, ...msg } }));
       if (msg.text) {
-          setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type || "info" }, ...prev].slice(0, 50));
+          setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type || "info" }, ...prev]);
       }
     } else if (msg.type === "speed_changed") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, speed: msg.speed } }));
@@ -347,6 +360,34 @@ export default function App() {
   const remaining = state?.players_remaining || [];
   const auction = state?.auction || {};
   const status = auction.status || "idle";
+
+  const downloadFeed = () => {
+    const rows = [["Time", "Type", "Text"]];
+    feed.forEach(item => rows.push([item.time || "", item.type || "", `"${(item.text || "").replace(/"/g, '""')}"`]));
+    downloadCSV("auction_feed.csv", rows);
+  };
+
+  const downloadSoldPlayers = () => {
+    const rows = [["Name", "Role", "Team", "Price (Lakhs)"]];
+    (state?.players_sold || []).forEach(p => rows.push([`"${(p.name || "").replace(/"/g, '""')}"`, p.role, `"${(p.sold_to || "").replace(/"/g, '""')}"`, p.sold_price]));
+    downloadCSV("sold_players.csv", rows);
+  };
+
+  const downloadTeams = () => {
+    const rows = [["Team", "Player Name", "Role", "Price (Lakhs)"]];
+    teams.forEach(t => {
+      (t.players || []).forEach(p => {
+        rows.push([`"${(t.name || "").replace(/"/g, '""')}"`, `"${(p.name || "").replace(/"/g, '""')}"`, p.role, p.price]);
+      });
+    });
+    downloadCSV("teams_squads.csv", rows);
+  };
+
+  const downloadUnsold = () => {
+    const rows = [["Name", "Role", "Base Price (Lakhs)", "Tier", "Nationality"]];
+    remaining.forEach(p => rows.push([`"${(p.name || "").replace(/"/g, '""')}"`, p.role, p.base_price, p.tier, p.nationality]));
+    downloadCSV(status === "finished" ? "unsold_players.csv" : "remaining_players.csv", rows);
+  };
 
   const TABS = [
     { id: "live", label: "🔴 Live" },
@@ -460,7 +501,10 @@ export default function App() {
 
             {/* Feed */}
             <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-              <div style={{ padding: "10px 16px 6px", fontSize: 11, color: "#475569", fontWeight: 600, letterSpacing: "0.07em" }}>AUCTION FEED</div>
+              <div style={{ padding: "10px 16px 6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 11, color: "#475569", fontWeight: 600, letterSpacing: "0.07em" }}>AUCTION FEED</span>
+                <button onClick={downloadFeed} style={{ background: "none", border: "1px solid #475569", color: "#94a3b8", borderRadius: 4, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}>CSV</button>
+              </div>
               <div ref={feedRef} style={{ flex: 1, overflowY: "auto", padding: "0 16px 16px" }}>
                 {feed.length === 0 && <div style={{ color: "#334155", fontSize: 12, paddingTop: 8 }}>Feed will appear here…</div>}
                 {feed.map((item, i) => <FeedItem key={i} item={item} />)}
@@ -490,7 +534,10 @@ export default function App() {
               {/* Teams tab */}
               {tab === "teams" && (
                 <div>
-                  <div style={{ fontSize: 12, color: "#475569", marginBottom: 14 }}>{teams.length} franchises · Budget tracker</div>
+                  <div style={{ fontSize: 12, color: "#475569", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>{teams.length} franchises · Budget tracker</span>
+                    <button onClick={downloadTeams} style={{ background: "none", border: "1px solid #475569", color: "#94a3b8", borderRadius: 4, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}>Download Squads CSV</button>
+                  </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
                     {teams.map(t => (
                       <TeamCard
@@ -528,8 +575,9 @@ export default function App() {
               {/* Queue tab */}
               {tab === "queue" && (
                 <div>
-                  <div style={{ fontSize: 12, color: "#475569", marginBottom: 14 }}>
-                    {remaining.length} {status === "finished" ? "unsold players" : "players remaining in auction"}
+                  <div style={{ fontSize: 12, color: "#475569", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>{remaining.length} {status === "finished" ? "unsold players" : "players remaining in auction"}</span>
+                    <button onClick={downloadUnsold} style={{ background: "none", border: "1px solid #475569", color: "#94a3b8", borderRadius: 4, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}>Download CSV</button>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {remaining.map((p, i) => (
@@ -546,7 +594,10 @@ export default function App() {
               {/* Live tab (right panel when not in left column view) */}
               {tab === "live" && (
                 <div>
-                  <div style={{ fontSize: 12, color: "#475569", marginBottom: 14 }}>Sold players</div>
+                  <div style={{ fontSize: 12, color: "#475569", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>Sold players</span>
+                    <button onClick={downloadSoldPlayers} style={{ background: "none", border: "1px solid #475569", color: "#94a3b8", borderRadius: 4, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}>Download CSV</button>
+                  </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {(state?.players_sold || []).map((p, i) => (
                       <div key={i} style={{

@@ -66,7 +66,7 @@ def sync_broadcast(payload: dict):
             "text": payload.get("text", ""),
             "type": payload.get("event_type", "info")
         })
-        auction_state["feed"] = auction_state["feed"][:50] # keep last 50
+        pass # Keep all logs
     
     if _main_loop and _main_loop.is_running():
         asyncio.run_coroutine_threadsafe(broadcast(payload), _main_loop)
