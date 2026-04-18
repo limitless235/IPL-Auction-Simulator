@@ -46,15 +46,15 @@ def sort_players_for_auction(players: List[Player]) -> List[Player]:
     add_group(get(tier=1, nationality="indian")[:6])
     add_group(get(tier=1, nationality="overseas")[:6])
 
-    # Capped sets (tier 2)
+    # Capped sets (tier 1 overflow + tier 2)
     for role in ["batter", "all_rounder", "wicket_keeper"]:
-        add_group(get(role=role, tier=2, nationality="indian"))
-        add_group(get(role=role, tier=2, nationality="overseas"))
+        add_group(get(role=role, tiers=[1, 2], nationality="indian"))
+        add_group(get(role=role, tiers=[1, 2], nationality="overseas"))
 
-    add_group(get(role="bowler", tier=2, pace=True, nationality="indian"))
-    add_group(get(role="bowler", tier=2, pace=True, nationality="overseas"))
-    add_group(get(role="bowler", tier=2, spin=True, nationality="indian"))
-    add_group(get(role="bowler", tier=2, spin=True, nationality="overseas"))
+    add_group(get(role="bowler", tiers=[1, 2], pace=True, nationality="indian"))
+    add_group(get(role="bowler", tiers=[1, 2], pace=True, nationality="overseas"))
+    add_group(get(role="bowler", tiers=[1, 2], spin=True, nationality="indian"))
+    add_group(get(role="bowler", tiers=[1, 2], spin=True, nationality="overseas"))
 
     # Uncapped sets (tier 3 and 4)
     for role in ["batter", "all_rounder", "wicket_keeper"]:
