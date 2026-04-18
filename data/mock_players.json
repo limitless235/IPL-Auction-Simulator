@@ -16,7 +16,10 @@
         "specialist_tags": [
             "hard-hitting"
         ],
-        "hype_score": 0.09
+        "hype_score": 0.09,
+        "tier": 1,
+        "recent_form": 0.75,
+        "age": 37
     },
     {
         "id": "p1",
@@ -28,8 +31,8 @@
         "age": 43,
         "nationality": "indian",
         "tier": 3,
-        "brand_value": 1.0,
-        "recent_form": 0.6,
+        "brand_value": 0.95,
+        "recent_form": 0.45,
         "ipl_experience": 16,
         "specialist_tag": "keeper_batter",
         "pace_bowler": false,
@@ -82,8 +85,8 @@
         "age": 33,
         "nationality": "overseas",
         "tier": 3,
-        "brand_value": 0.75,
-        "recent_form": 0.75,
+        "brand_value": 0.55,
+        "recent_form": 0.65,
         "ipl_experience": 4,
         "specialist_tag": "anchor",
         "pace_bowler": false,
@@ -226,9 +229,9 @@
         "previous_team": "CSK",
         "specialist_tags": [
             "pace-powerplay",
+            "middle-order",
             "batting-allrounder",
-            "bowling-allrounder",
-            "middle-order"
+            "bowling-allrounder"
         ],
         "hype_score": 0.28
     },
@@ -254,11 +257,11 @@
         "scout_hype": 0.2,
         "previous_team": "CSK",
         "specialist_tags": [
-            "bowling-allrounder",
             "hard-hitting",
-            "finger-spin",
             "batting-allrounder",
-            "finisher"
+            "bowling-allrounder",
+            "finisher",
+            "finger-spin"
         ],
         "hype_score": 0.25
     },
@@ -284,10 +287,10 @@
         "scout_hype": 0.1,
         "previous_team": "CSK",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.03
     },
@@ -313,10 +316,10 @@
         "scout_hype": 0.2,
         "previous_team": "CSK",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.05
     },
@@ -329,8 +332,8 @@
         "is_youth": true,
         "age": 23,
         "nationality": "indian",
-        "tier": 3,
-        "brand_value": 0.2,
+        "tier": 4,
+        "brand_value": 0.15,
         "recent_form": 0.6,
         "ipl_experience": 1,
         "specialist_tag": "allrounder_bowl",
@@ -342,10 +345,10 @@
         "scout_hype": 0.85,
         "previous_team": "CSK",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "pace-middle",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.17
     },
@@ -371,10 +374,10 @@
         "scout_hype": 0.6,
         "previous_team": "CSK",
         "specialist_tags": [
-            "batting-allrounder",
+            "finger-spin",
             "top-order",
-            "bowling-allrounder",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.01
     },
@@ -388,7 +391,7 @@
         "age": 37,
         "nationality": "indian",
         "tier": 2,
-        "brand_value": 0.8,
+        "brand_value": 0.75,
         "recent_form": 0.75,
         "ipl_experience": 16,
         "specialist_tag": "allrounder_bowl",
@@ -400,8 +403,8 @@
         "scout_hype": 0.1,
         "previous_team": "CSK",
         "specialist_tags": [
-            "bowling-allrounder",
-            "finger-spin"
+            "finger-spin",
+            "bowling-allrounder"
         ],
         "hype_score": 0.04
     },
@@ -414,9 +417,9 @@
         "is_youth": false,
         "age": 26,
         "nationality": "overseas",
-        "tier": 3,
+        "tier": 2,
         "brand_value": 0.8,
-        "recent_form": 0.65,
+        "recent_form": 0.7,
         "ipl_experience": 6,
         "specialist_tag": "allrounder_bowl",
         "pace_bowler": true,
@@ -427,11 +430,11 @@
         "scout_hype": 0.4,
         "previous_team": "CSK",
         "specialist_tags": [
-            "bowling-allrounder",
-            "swing",
             "pace-powerplay",
             "middle-order",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder",
+            "swing"
         ],
         "hype_score": 0.1
     },
@@ -484,10 +487,10 @@
         "scout_hype": 0.6,
         "previous_team": "CSK",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "pace-middle",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.23
     },
@@ -600,12 +603,12 @@
         "name": "Noor Ahmad",
         "role": "bowler",
         "base_price": 10000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": true,
         "age": 19,
         "nationality": "overseas",
-        "tier": 2,
-        "brand_value": 0.7,
+        "tier": 3,
+        "brand_value": 0.5,
         "recent_form": 0.8,
         "ipl_experience": 3,
         "specialist_tag": "spinner",
@@ -683,8 +686,8 @@
         "age": 25,
         "nationality": "overseas",
         "tier": 3,
-        "brand_value": 0.75,
-        "recent_form": 0.7,
+        "brand_value": 0.6,
+        "recent_form": 0.6,
         "ipl_experience": 2,
         "specialist_tag": "powerplay",
         "pace_bowler": false,
@@ -757,12 +760,12 @@
         "name": "Tristan Stubbs",
         "role": "wicket_keeper",
         "base_price": 10000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 24,
         "nationality": "overseas",
-        "tier": 2,
-        "brand_value": 0.7,
+        "tier": 3,
+        "brand_value": 0.55,
         "recent_form": 0.8,
         "ipl_experience": 3,
         "specialist_tag": "keeper_batter",
@@ -882,11 +885,11 @@
         "scout_hype": 0.3,
         "previous_team": "DC",
         "specialist_tags": [
-            "bowling-allrounder",
             "hard-hitting",
-            "finger-spin",
             "middle-order",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder",
+            "finger-spin"
         ],
         "hype_score": 0.3
     },
@@ -964,10 +967,10 @@
         "scout_hype": 0.4,
         "previous_team": "DC",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "pace-middle",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.19
     },
@@ -993,10 +996,10 @@
         "scout_hype": 0.6,
         "previous_team": "DC",
         "specialist_tags": [
-            "batting-allrounder",
+            "middle-order",
             "wrist-spin",
-            "bowling-allrounder",
-            "middle-order"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.2
     },
@@ -1022,10 +1025,10 @@
         "scout_hype": 0.3,
         "previous_team": "DC",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.01
     },
@@ -1051,10 +1054,10 @@
         "scout_hype": 0.6,
         "previous_team": "DC",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.06
     },
@@ -1080,10 +1083,10 @@
         "scout_hype": 0.7,
         "previous_team": "DC",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.08
     },
@@ -1109,10 +1112,10 @@
         "scout_hype": 0.5,
         "previous_team": "DC",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.06
     },
@@ -1147,12 +1150,12 @@
         "name": "Dushmantha Chameera",
         "role": "bowler",
         "base_price": 2000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 32,
         "nationality": "overseas",
         "tier": 4,
-        "brand_value": 0.6,
+        "brand_value": 0.35,
         "recent_form": 0.6,
         "ipl_experience": 5,
         "specialist_tag": "pace_spearhead",
@@ -1190,8 +1193,8 @@
         "scout_hype": 0.1,
         "previous_team": "DC",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.16
     },
@@ -1226,12 +1229,12 @@
         "name": "T Natarajan",
         "role": "bowler",
         "base_price": 10000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 33,
         "nationality": "indian",
-        "tier": 2,
-        "brand_value": 0.75,
+        "tier": 3,
+        "brand_value": 0.5,
         "recent_form": 0.8,
         "ipl_experience": 7,
         "specialist_tag": "death_bowler",
@@ -1243,7 +1246,7 @@
         "scout_hype": 0.3,
         "previous_team": "DC",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.06
     },
@@ -1252,12 +1255,12 @@
         "name": "Mukesh Kumar",
         "role": "bowler",
         "base_price": 10000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 30,
         "nationality": "indian",
-        "tier": 2,
-        "brand_value": 0.7,
+        "tier": 3,
+        "brand_value": 0.55,
         "recent_form": 0.75,
         "ipl_experience": 5,
         "specialist_tag": "powerplay",
@@ -1269,7 +1272,7 @@
         "scout_hype": 0.4,
         "previous_team": "DC",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.01
     },
@@ -1455,11 +1458,11 @@
         "scout_hype": 0.2,
         "previous_team": "GT",
         "specialist_tags": [
-            "wrist-spin",
             "hard-hitting",
-            "bowling-allrounder",
             "batting-allrounder",
-            "finisher"
+            "bowling-allrounder",
+            "finisher",
+            "wrist-spin"
         ],
         "hype_score": 0.4
     },
@@ -1485,10 +1488,10 @@
         "scout_hype": 0.2,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "wrist-spin",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.18
     },
@@ -1540,10 +1543,10 @@
         "scout_hype": 0.75,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.08
     },
@@ -1569,10 +1572,10 @@
         "scout_hype": 0.4,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.02
     },
@@ -1598,10 +1601,10 @@
         "scout_hype": 0.6,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "pace-powerplay"
+            "pace-powerplay",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.21
     },
@@ -1627,10 +1630,10 @@
         "scout_hype": 0.1,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.05
     },
@@ -1656,10 +1659,10 @@
         "scout_hype": 0.5,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.07
     },
@@ -1685,10 +1688,10 @@
         "scout_hype": 0.3,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "pace-powerplay"
+            "pace-powerplay",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.24
     },
@@ -1714,10 +1717,10 @@
         "scout_hype": 0.4,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.06
     },
@@ -1743,10 +1746,10 @@
         "scout_hype": 0.3,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
+            "finger-spin",
             "top-order",
-            "bowling-allrounder",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.08
     },
@@ -1772,10 +1775,10 @@
         "scout_hype": 0.4,
         "previous_team": "GT",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.07
     },
@@ -1880,8 +1883,8 @@
         "scout_hype": 0.2,
         "previous_team": "GT",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.41
     },
@@ -1890,12 +1893,12 @@
         "name": "Prasidh Krishna",
         "role": "bowler",
         "base_price": 10000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 28,
         "nationality": "indian",
-        "tier": 2,
-        "brand_value": 0.75,
+        "tier": 3,
+        "brand_value": 0.6,
         "recent_form": 0.8,
         "ipl_experience": 6,
         "specialist_tag": "powerplay",
@@ -1907,7 +1910,7 @@
         "scout_hype": 0.4,
         "previous_team": "GT",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.1
     },
@@ -1933,8 +1936,8 @@
         "scout_hype": 0.2,
         "previous_team": "GT",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.39
     },
@@ -1999,8 +2002,8 @@
         "is_youth": true,
         "age": 20,
         "nationality": "indian",
-        "tier": 3,
-        "brand_value": 0.3,
+        "tier": 4,
+        "brand_value": 0.25,
         "recent_form": 0.6,
         "ipl_experience": 1,
         "specialist_tag": "anchor",
@@ -2077,7 +2080,7 @@
         "is_youth": false,
         "age": 31,
         "nationality": "overseas",
-        "tier": 3,
+        "tier": 2,
         "brand_value": 0.85,
         "recent_form": 0.75,
         "ipl_experience": 11,
@@ -2172,10 +2175,10 @@
         "previous_team": "KKR",
         "specialist_tags": [
             "top-order",
-            "bowling-allrounder",
             "hard-hitting",
-            "finger-spin",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder",
+            "finger-spin"
         ],
         "hype_score": 0.3
     },
@@ -2202,11 +2205,11 @@
         "previous_team": "KKR",
         "specialist_tags": [
             "hard-hitting",
-            "bowling-allrounder",
-            "pace-death",
-            "swing",
             "batting-allrounder",
-            "finisher"
+            "bowling-allrounder",
+            "finisher",
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.19
     },
@@ -2232,10 +2235,10 @@
         "scout_hype": 0.85,
         "previous_team": "KKR",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "pace-middle",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.21
     },
@@ -2261,10 +2264,10 @@
         "scout_hype": 0.4,
         "previous_team": "KKR",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "pace-powerplay"
+            "pace-powerplay",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.24
     },
@@ -2277,8 +2280,8 @@
         "is_youth": false,
         "age": 30,
         "nationality": "indian",
-        "tier": 1,
-        "brand_value": 0.85,
+        "tier": 2,
+        "brand_value": 0.75,
         "recent_form": 0.8,
         "ipl_experience": 5,
         "specialist_tag": "allrounder_bat",
@@ -2290,12 +2293,10 @@
         "scout_hype": 0.6,
         "previous_team": "KKR",
         "specialist_tags": [
-            "hard-hitting",
-            "bowling-allrounder",
-            "pace-death",
-            "swing",
+            "pace-powerplay",
             "middle-order",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.22
     },
@@ -2321,10 +2322,10 @@
         "scout_hype": 0.3,
         "previous_team": "KKR",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "finger-spin"
+            "finger-spin",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.25
     },
@@ -2350,11 +2351,11 @@
         "scout_hype": 0.1,
         "previous_team": "KKR",
         "specialist_tags": [
-            "bowling-allrounder",
             "hard-hitting",
-            "finger-spin",
             "middle-order",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder",
+            "finger-spin"
         ],
         "hype_score": 0.1
     },
@@ -2393,8 +2394,8 @@
         "is_youth": true,
         "age": 23,
         "nationality": "indian",
-        "tier": 2,
-        "brand_value": 0.7,
+        "tier": 3,
+        "brand_value": 0.55,
         "recent_form": 0.8,
         "ipl_experience": 3,
         "specialist_tag": "death_bowler",
@@ -2406,7 +2407,7 @@
         "scout_hype": 0.9,
         "previous_team": "KKR",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.08
     },
@@ -2471,7 +2472,7 @@
         "is_youth": false,
         "age": 30,
         "nationality": "overseas",
-        "tier": 3,
+        "tier": 2,
         "brand_value": 0.85,
         "recent_form": 0.75,
         "ipl_experience": 7,
@@ -2484,8 +2485,8 @@
         "scout_hype": 0.2,
         "previous_team": "KKR",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.23
     },
@@ -2577,8 +2578,8 @@
         "age": 35,
         "nationality": "overseas",
         "tier": 3,
-        "brand_value": 0.85,
-        "recent_form": 0.8,
+        "brand_value": 0.7,
+        "recent_form": 0.6,
         "ipl_experience": 12,
         "specialist_tag": "finisher",
         "pace_bowler": false,
@@ -2589,7 +2590,6 @@
         "scout_hype": 0.2,
         "previous_team": "LSG",
         "specialist_tags": [
-            "hard-hitting",
             "finisher"
         ],
         "hype_score": 0.21
@@ -2749,10 +2749,10 @@
         "scout_hype": 0.4,
         "previous_team": "LSG",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "finger-spin"
+            "finger-spin",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.19
     },
@@ -2804,10 +2804,10 @@
         "scout_hype": 0.6,
         "previous_team": "LSG",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.06
     },
@@ -2821,8 +2821,8 @@
         "age": 32,
         "nationality": "overseas",
         "tier": 3,
-        "brand_value": 0.85,
-        "recent_form": 0.75,
+        "brand_value": 0.65,
+        "recent_form": 0.55,
         "ipl_experience": 10,
         "specialist_tag": "allrounder_bat",
         "pace_bowler": true,
@@ -2834,11 +2834,9 @@
         "previous_team": "LSG",
         "specialist_tags": [
             "top-order",
-            "hard-hitting",
-            "bowling-allrounder",
-            "pace-death",
-            "swing",
-            "batting-allrounder"
+            "pace-powerplay",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.24
     },
@@ -2864,10 +2862,10 @@
         "scout_hype": 0.85,
         "previous_team": "LSG",
         "specialist_tags": [
-            "batting-allrounder",
+            "bowling-allrounder",
             "top-order",
-            "pace-middle",
-            "bowling-allrounder"
+            "batting-allrounder",
+            "pace-middle"
         ],
         "hype_score": 0.03
     },
@@ -2893,10 +2891,10 @@
         "scout_hype": 0.7,
         "previous_team": "LSG",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "pace-middle",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.15
     },
@@ -2983,12 +2981,12 @@
         "name": "Akash Deep",
         "role": "bowler",
         "base_price": 10000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 28,
         "nationality": "indian",
-        "tier": 2,
-        "brand_value": 0.7,
+        "tier": 3,
+        "brand_value": 0.55,
         "recent_form": 0.75,
         "ipl_experience": 4,
         "specialist_tag": "powerplay",
@@ -3000,7 +2998,7 @@
         "scout_hype": 0.5,
         "previous_team": "LSG",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.01
     },
@@ -3183,8 +3181,8 @@
         "scout_hype": 0.1,
         "previous_team": "MI",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.42
     },
@@ -3371,11 +3369,11 @@
         "previous_team": "MI",
         "specialist_tags": [
             "hard-hitting",
-            "bowling-allrounder",
-            "pace-death",
-            "swing",
             "batting-allrounder",
-            "finisher"
+            "bowling-allrounder",
+            "finisher",
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.22
     },
@@ -3388,8 +3386,8 @@
         "is_youth": false,
         "age": 25,
         "nationality": "indian",
-        "tier": 3,
-        "brand_value": 0.4,
+        "tier": 4,
+        "brand_value": 0.3,
         "recent_form": 0.65,
         "ipl_experience": 2,
         "specialist_tag": "allrounder_bat",
@@ -3401,10 +3399,10 @@
         "scout_hype": 0.75,
         "previous_team": "MI",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.03
     },
@@ -3430,10 +3428,10 @@
         "scout_hype": 0.8,
         "previous_team": "MI",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.03
     },
@@ -3459,10 +3457,10 @@
         "scout_hype": 0.5,
         "previous_team": "MI",
         "specialist_tags": [
-            "batting-allrounder",
+            "finger-spin",
             "top-order",
-            "bowling-allrounder",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.08
     },
@@ -3488,10 +3486,10 @@
         "scout_hype": 0.2,
         "previous_team": "MI",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "finger-spin"
+            "finger-spin",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.21
     },
@@ -3517,10 +3515,10 @@
         "scout_hype": 0.65,
         "previous_team": "MI",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.05
     },
@@ -3650,8 +3648,8 @@
         "scout_hype": 0.1,
         "previous_team": "MI",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.37
     },
@@ -3677,9 +3675,9 @@
         "scout_hype": 0.2,
         "previous_team": "MI",
         "specialist_tags": [
+            "finisher",
             "swing",
-            "pace-death",
-            "finisher"
+            "pace-death"
         ],
         "hype_score": 0.17
     },
@@ -3942,10 +3940,10 @@
         "scout_hype": 0.6,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.08
     },
@@ -3971,10 +3969,10 @@
         "scout_hype": 0.4,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "finger-spin"
+            "finger-spin",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.21
     },
@@ -3987,7 +3985,7 @@
         "is_youth": false,
         "age": 24,
         "nationality": "overseas",
-        "tier": 3,
+        "tier": 2,
         "brand_value": 0.8,
         "recent_form": 0.8,
         "ipl_experience": 5,
@@ -4000,11 +3998,11 @@
         "scout_hype": 0.6,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "bowling-allrounder",
-            "swing",
             "pace-powerplay",
             "batting-allrounder",
-            "finisher"
+            "bowling-allrounder",
+            "finisher",
+            "swing"
         ],
         "hype_score": 0.19
     },
@@ -4031,9 +4029,9 @@
         "previous_team": "PBKS",
         "specialist_tags": [
             "pace-powerplay",
+            "middle-order",
             "batting-allrounder",
-            "bowling-allrounder",
-            "middle-order"
+            "bowling-allrounder"
         ],
         "hype_score": 0.04
     },
@@ -4060,9 +4058,9 @@
         "previous_team": "PBKS",
         "specialist_tags": [
             "pace-powerplay",
+            "middle-order",
             "batting-allrounder",
-            "bowling-allrounder",
-            "middle-order"
+            "bowling-allrounder"
         ],
         "hype_score": 0.08
     },
@@ -4114,10 +4112,10 @@
         "scout_hype": 0.3,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "wrist-spin",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.22
     },
@@ -4131,8 +4129,8 @@
         "age": 36,
         "nationality": "overseas",
         "tier": 3,
-        "brand_value": 0.95,
-        "recent_form": 0.75,
+        "brand_value": 0.8,
+        "recent_form": 0.55,
         "ipl_experience": 14,
         "specialist_tag": "allrounder_bat",
         "pace_bowler": false,
@@ -4143,11 +4141,10 @@
         "scout_hype": 0.1,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "bowling-allrounder",
-            "hard-hitting",
             "finger-spin",
             "middle-order",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.04
     },
@@ -4174,11 +4171,11 @@
         "previous_team": "PBKS",
         "specialist_tags": [
             "hard-hitting",
-            "bowling-allrounder",
-            "pace-death",
-            "swing",
             "middle-order",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder",
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.15
     },
@@ -4265,12 +4262,12 @@
         "name": "Xavier Bartlett",
         "role": "bowler",
         "base_price": 2000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 25,
         "nationality": "overseas",
         "tier": 4,
-        "brand_value": 0.7,
+        "brand_value": 0.45,
         "recent_form": 0.75,
         "ipl_experience": 2,
         "specialist_tag": "powerplay",
@@ -4282,7 +4279,7 @@
         "scout_hype": 0.6,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.02
     },
@@ -4308,8 +4305,8 @@
         "scout_hype": 0.2,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.38
     },
@@ -4348,7 +4345,7 @@
         "is_youth": false,
         "age": 33,
         "nationality": "overseas",
-        "tier": 3,
+        "tier": 2,
         "brand_value": 0.85,
         "recent_form": 0.75,
         "ipl_experience": 8,
@@ -4361,8 +4358,8 @@
         "scout_hype": 0.2,
         "previous_team": "PBKS",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.17
     },
@@ -4469,8 +4466,8 @@
         "scout_hype": 0.2,
         "previous_team": "RR",
         "specialist_tags": [
-            "hard-hitting",
-            "finisher"
+            "finisher",
+            "hard-hitting"
         ],
         "hype_score": 0.2
     },
@@ -4576,10 +4573,10 @@
         "scout_hype": 0.8,
         "previous_team": "RR",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.29
     },
@@ -4631,10 +4628,10 @@
         "scout_hype": 0.5,
         "previous_team": "RR",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "pace-middle",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.2
     },
@@ -4648,8 +4645,8 @@
         "age": 30,
         "nationality": "indian",
         "tier": 3,
-        "brand_value": 0.75,
-        "recent_form": 0.7,
+        "brand_value": 0.5,
+        "recent_form": 0.55,
         "ipl_experience": 11,
         "specialist_tag": "allrounder_bat",
         "pace_bowler": false,
@@ -4660,10 +4657,10 @@
         "scout_hype": 0.2,
         "previous_team": "RR",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.05
     },
@@ -4776,12 +4773,12 @@
         "name": "Kwena Maphaka",
         "role": "bowler",
         "base_price": 2000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": true,
         "age": 18,
         "nationality": "overseas",
         "tier": 4,
-        "brand_value": 0.7,
+        "brand_value": 0.4,
         "recent_form": 0.8,
         "ipl_experience": 1,
         "specialist_tag": "pace_spearhead",
@@ -4793,7 +4790,7 @@
         "scout_hype": 0.95,
         "previous_team": "RR",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.01
     },
@@ -4806,7 +4803,7 @@
         "is_youth": false,
         "age": 27,
         "nationality": "overseas",
-        "tier": 3,
+        "tier": 2,
         "brand_value": 0.85,
         "recent_form": 0.8,
         "ipl_experience": 7,
@@ -4819,8 +4816,8 @@
         "scout_hype": 0.4,
         "previous_team": "RR",
         "specialist_tags": [
-            "wrist-spin",
-            "finisher"
+            "finisher",
+            "wrist-spin"
         ],
         "hype_score": 0.19
     },
@@ -4855,12 +4852,12 @@
         "name": "Fazalhaq Farooqi",
         "role": "bowler",
         "base_price": 2000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": true,
         "age": 23,
         "nationality": "overseas",
         "tier": 4,
-        "brand_value": 0.7,
+        "brand_value": 0.55,
         "recent_form": 0.75,
         "ipl_experience": 5,
         "specialist_tag": "powerplay",
@@ -4872,7 +4869,7 @@
         "scout_hype": 0.7,
         "previous_team": "RR",
         "specialist_tags": [
-            "pace-powerplay"
+            "pace-middle"
         ],
         "hype_score": 0.01
     },
@@ -4898,9 +4895,9 @@
         "scout_hype": 0.4,
         "previous_team": "RR",
         "specialist_tags": [
+            "finisher",
             "swing",
-            "pace-death",
-            "finisher"
+            "pace-death"
         ],
         "hype_score": 0.17
     },
@@ -4993,7 +4990,7 @@
         "age": 24,
         "nationality": "indian",
         "tier": 4,
-        "brand_value": 0.7,
+        "brand_value": 0.45,
         "recent_form": 0.6,
         "ipl_experience": 7,
         "specialist_tag": "anchor",
@@ -5014,12 +5011,12 @@
         "name": "Jitesh Sharma",
         "role": "wicket_keeper",
         "base_price": 10000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 30,
         "nationality": "indian",
-        "tier": 2,
-        "brand_value": 0.75,
+        "tier": 3,
+        "brand_value": 0.5,
         "recent_form": 0.8,
         "ipl_experience": 6,
         "specialist_tag": "keeper_batter",
@@ -5085,10 +5082,10 @@
         "scout_hype": 0.2,
         "previous_team": "RCB",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "finger-spin"
+            "finger-spin",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.24
     },
@@ -5101,8 +5098,8 @@
         "is_youth": true,
         "age": 21,
         "nationality": "overseas",
-        "tier": 2,
-        "brand_value": 0.7,
+        "tier": 3,
+        "brand_value": 0.55,
         "recent_form": 0.9,
         "ipl_experience": 2,
         "specialist_tag": "allrounder_bat",
@@ -5114,10 +5111,10 @@
         "scout_hype": 0.95,
         "previous_team": "RCB",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.2
     },
@@ -5143,10 +5140,10 @@
         "scout_hype": 0.4,
         "previous_team": "RCB",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "pace-powerplay"
+            "pace-powerplay",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.23
     },
@@ -5172,11 +5169,11 @@
         "scout_hype": 0.3,
         "previous_team": "RCB",
         "specialist_tags": [
-            "wrist-spin",
             "hard-hitting",
-            "bowling-allrounder",
             "middle-order",
-            "batting-allrounder"
+            "batting-allrounder",
+            "bowling-allrounder",
+            "wrist-spin"
         ],
         "hype_score": 0.39
     },
@@ -5190,7 +5187,7 @@
         "age": 33,
         "nationality": "indian",
         "tier": 3,
-        "brand_value": 0.8,
+        "brand_value": 0.55,
         "recent_form": 0.75,
         "ipl_experience": 11,
         "specialist_tag": "allrounder_bowl",
@@ -5202,10 +5199,10 @@
         "scout_hype": 0.2,
         "previous_team": "RCB",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.06
     },
@@ -5231,8 +5228,8 @@
         "scout_hype": 0.4,
         "previous_team": "RCB",
         "specialist_tags": [
-            "hard-hitting",
-            "finisher"
+            "finisher",
+            "hard-hitting"
         ],
         "hype_score": 0.43
     },
@@ -5258,10 +5255,10 @@
         "scout_hype": 0.5,
         "previous_team": "RCB",
         "specialist_tags": [
-            "batting-allrounder",
+            "finisher",
             "pace-middle",
-            "bowling-allrounder",
-            "finisher"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.2
     },
@@ -5444,8 +5441,8 @@
         "scout_hype": 0.2,
         "previous_team": "RCB",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.35
     },
@@ -5471,8 +5468,8 @@
         "scout_hype": 0.1,
         "previous_team": "RCB",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.25
     },
@@ -5683,11 +5680,11 @@
         "previous_team": "SRH",
         "specialist_tags": [
             "hard-hitting",
-            "bowling-allrounder",
-            "pace-death",
-            "swing",
             "batting-allrounder",
-            "finisher"
+            "bowling-allrounder",
+            "finisher",
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.43
     },
@@ -5713,10 +5710,10 @@
         "scout_hype": 0.95,
         "previous_team": "SRH",
         "specialist_tags": [
-            "batting-allrounder",
             "pace-middle",
-            "bowling-allrounder",
-            "middle-order"
+            "middle-order",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.06
     },
@@ -5730,7 +5727,7 @@
         "age": 24,
         "nationality": "indian",
         "tier": 2,
-        "brand_value": 0.85,
+        "brand_value": 0.7,
         "recent_form": 0.85,
         "ipl_experience": 7,
         "specialist_tag": "powerplay",
@@ -5742,9 +5739,8 @@
         "scout_hype": 0.7,
         "previous_team": "SRH",
         "specialist_tags": [
-            "top-order",
-            "hard-hitting",
-            "finger-spin"
+            "finger-spin",
+            "top-order"
         ],
         "hype_score": 0.21
     },
@@ -5780,12 +5776,12 @@
         "name": "Brydon Carse",
         "role": "all_rounder",
         "base_price": 2000000,
-        "is_star": true,
+        "is_star": false,
         "is_youth": false,
         "age": 28,
         "nationality": "overseas",
         "tier": 4,
-        "brand_value": 0.7,
+        "brand_value": 0.4,
         "recent_form": 0.7,
         "ipl_experience": 2,
         "specialist_tag": "allrounder_bowl",
@@ -5797,10 +5793,10 @@
         "scout_hype": 0.5,
         "previous_team": "SRH",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
             "finisher",
-            "pace-powerplay"
+            "pace-middle",
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.17
     },
@@ -5826,10 +5822,10 @@
         "scout_hype": 0.6,
         "previous_team": "SRH",
         "specialist_tags": [
-            "batting-allrounder",
-            "bowling-allrounder",
+            "finger-spin",
             "middle-order",
-            "finger-spin"
+            "batting-allrounder",
+            "bowling-allrounder"
         ],
         "hype_score": 0.0
     },
@@ -5843,7 +5839,7 @@
         "age": 33,
         "nationality": "indian",
         "tier": 2,
-        "brand_value": 0.85,
+        "brand_value": 0.7,
         "recent_form": 0.8,
         "ipl_experience": 11,
         "specialist_tag": "allrounder_bowl",
@@ -5855,12 +5851,10 @@
         "scout_hype": 0.2,
         "previous_team": "SRH",
         "specialist_tags": [
-            "hard-hitting",
-            "bowling-allrounder",
-            "pace-death",
-            "swing",
+            "finisher",
+            "pace-powerplay",
             "batting-allrounder",
-            "finisher"
+            "bowling-allrounder"
         ],
         "hype_score": 0.18
     },
@@ -5990,8 +5984,8 @@
         "scout_hype": 0.1,
         "previous_team": "GT",
         "specialist_tags": [
-            "pace-death",
-            "swing"
+            "swing",
+            "pace-death"
         ],
         "hype_score": 0.4
     },
