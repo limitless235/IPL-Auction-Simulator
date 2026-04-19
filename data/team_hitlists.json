@@ -1,0 +1,622 @@
+{
+    "CSK": {
+        "primary": [
+            {
+                "name": "Ravichandran Ashwin",
+                "max_lakhs": 1000,
+                "reason": "experience + spin allrounder"
+            },
+            {
+                "name": "Noor Ahmad",
+                "max_lakhs": 1050,
+                "reason": "young left-arm wrist spinner"
+            },
+            {
+                "name": "Devon Conway",
+                "max_lakhs": 650,
+                "reason": "reliable top-order overseas"
+            },
+            {
+                "name": "Sam Curran",
+                "max_lakhs": 350,
+                "reason": "allrounder utility, former CSK"
+            },
+            {
+                "name": "Khaleel Ahmed",
+                "max_lakhs": 500,
+                "reason": "left-arm pace variety"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Rachin Ravindra",
+                "max_lakhs": 450,
+                "reason": "NZ allrounder depth"
+            },
+            {
+                "name": "Deepak Hooda",
+                "max_lakhs": 200,
+                "reason": "batting allrounder backup"
+            },
+            {
+                "name": "Nathan Ellis",
+                "max_lakhs": 250,
+                "reason": "death bowling overseas option"
+            },
+            {
+                "name": "Rahul Tripathi",
+                "max_lakhs": 400,
+                "reason": "middle-order Indian bat"
+            },
+            {
+                "name": "Rishabh Pant",
+                "max_lakhs": 1200,
+                "reason": "WK-batter successor to Dhoni"
+            }
+        ],
+        "strategy": "Experience-heavy, spin-focused rebuild around Jadeja/Gaikwad core"
+    },
+    "MI": {
+        "primary": [
+            {
+                "name": "Trent Boult",
+                "max_lakhs": 1300,
+                "reason": "powerplay pacer, MI reunion"
+            },
+            {
+                "name": "Deepak Chahar",
+                "max_lakhs": 950,
+                "reason": "swing bowler + lower-order bat"
+            },
+            {
+                "name": "Will Jacks",
+                "max_lakhs": 550,
+                "reason": "explosive overseas allrounder"
+            },
+            {
+                "name": "Allah Ghazanfar",
+                "max_lakhs": 400,
+                "reason": "young Afghan spinner prospect"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Mitchell Santner",
+                "max_lakhs": 200,
+                "reason": "spin allrounder utility"
+            },
+            {
+                "name": "Ryan Rickelton",
+                "max_lakhs": 100,
+                "reason": "overseas bat backup"
+            },
+            {
+                "name": "Reece Topley",
+                "max_lakhs": 250,
+                "reason": "left-arm pace variety"
+            },
+            {
+                "name": "Naman Dhir",
+                "max_lakhs": 200,
+                "reason": "uncapped Indian allrounder RTM"
+            },
+            {
+                "name": "Arshdeep Singh",
+                "max_lakhs": 1400,
+                "reason": "Indian T20 left-arm death bowler"
+            },
+            {
+                "name": "Yuzvendra Chahal",
+                "max_lakhs": 1000,
+                "reason": "leg-spin option"
+            },
+            {
+                "name": "Mitchell Starc",
+                "max_lakhs": 900,
+                "reason": "left-arm pace reunion"
+            }
+        ],
+        "strategy": "Pace-first rebuild, fill gaps around Bumrah/SKY/Hardik core"
+    },
+    "RCB": {
+        "primary": [
+            {
+                "name": "Josh Hazlewood",
+                "max_lakhs": 1275,
+                "reason": "premium overseas pace"
+            },
+            {
+                "name": "Phil Salt",
+                "max_lakhs": 1175,
+                "reason": "explosive WK-batter opener"
+            },
+            {
+                "name": "Jitesh Sharma",
+                "max_lakhs": 1125,
+                "reason": "Indian WK-batter finisher"
+            },
+            {
+                "name": "Bhuvneshwar Kumar",
+                "max_lakhs": 1100,
+                "reason": "swing bowling veteran"
+            },
+            {
+                "name": "Liam Livingstone",
+                "max_lakhs": 900,
+                "reason": "power-hitting overseas allrounder"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Krunal Pandya",
+                "max_lakhs": 600,
+                "reason": "spin allrounder"
+            },
+            {
+                "name": "Tim David",
+                "max_lakhs": 550,
+                "reason": "finisher overseas"
+            },
+            {
+                "name": "Rasikh Dar",
+                "max_lakhs": 625,
+                "reason": "young Indian pace prospect"
+            },
+            {
+                "name": "Devdutt Padikkal",
+                "max_lakhs": 250,
+                "reason": "left-hand bat option"
+            },
+            {
+                "name": "Jacob Bethell",
+                "max_lakhs": 350,
+                "reason": "young England prospect"
+            },
+            {
+                "name": "Shreyas Iyer",
+                "max_lakhs": 1800,
+                "reason": "marquee Indian captain material"
+            },
+            {
+                "name": "Rishabh Pant",
+                "max_lakhs": 1800,
+                "reason": "explosive WK-batter opener"
+            },
+            {
+                "name": "Arshdeep Singh",
+                "max_lakhs": 1100,
+                "reason": "death bowling option"
+            },
+            {
+                "name": "Yuzvendra Chahal",
+                "max_lakhs": 1500,
+                "reason": "former RCB fan favorite leg-spinner"
+            },
+            {
+                "name": "KL Rahul",
+                "max_lakhs": 1200,
+                "reason": "former RCB captain reunion"
+            },
+            {
+                "name": "Mitchell Starc",
+                "max_lakhs": 1000,
+                "reason": "strike bowler overseas"
+            }
+        ],
+        "strategy": "Aggressive big-money buys for star-studded squad around Kohli"
+    },
+    "KKR": {
+        "primary": [
+            {
+                "name": "Venkatesh Iyer",
+                "max_lakhs": 2400,
+                "reason": "franchise player, batting allrounder"
+            },
+            {
+                "name": "Quinton de Kock",
+                "max_lakhs": 400,
+                "reason": "overseas WK-batter"
+            },
+            {
+                "name": "Anrich Nortje",
+                "max_lakhs": 650,
+                "reason": "express overseas pace"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Angkrish Raghuvanshi",
+                "max_lakhs": 325,
+                "reason": "young Indian bat prospect"
+            },
+            {
+                "name": "Rahmanullah Gurbaz",
+                "max_lakhs": 225,
+                "reason": "aggressive overseas opener"
+            },
+            {
+                "name": "Manish Pandey",
+                "max_lakhs": 100,
+                "reason": "experienced Indian middle-order"
+            },
+            {
+                "name": "Moeen Ali",
+                "max_lakhs": 200,
+                "reason": "spin allrounder overseas"
+            },
+            {
+                "name": "Spencer Johnson",
+                "max_lakhs": 275,
+                "reason": "Australian pace option"
+            },
+            {
+                "name": "Shreyas Iyer",
+                "max_lakhs": 1400,
+                "reason": "former KKR captain reunion"
+            },
+            {
+                "name": "Yuzvendra Chahal",
+                "max_lakhs": 1200,
+                "reason": "premium leg-spinner"
+            }
+        ],
+        "strategy": "Anchor around V.Iyer + Narine retained core, fill with value overseas"
+    },
+    "DC": {
+        "primary": [
+            {
+                "name": "KL Rahul",
+                "max_lakhs": 1425,
+                "reason": "captaincy + WK-batter"
+            },
+            {
+                "name": "Mitchell Starc",
+                "max_lakhs": 1200,
+                "reason": "premium left-arm pace"
+            },
+            {
+                "name": "T Natarajan",
+                "max_lakhs": 500,
+                "reason": "death bowling left-arm"
+            },
+            {
+                "name": "Jake Fraser-McGurk",
+                "max_lakhs": 925,
+                "reason": "RTM young explosive opener"
+            },
+            {
+                "name": "Harry Brook",
+                "max_lakhs": 650,
+                "reason": "overseas middle-order bat"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Ashutosh Sharma",
+                "max_lakhs": 400,
+                "reason": "Indian bat prospect"
+            },
+            {
+                "name": "Mohit Sharma",
+                "max_lakhs": 250,
+                "reason": "experienced Indian medium pace"
+            },
+            {
+                "name": "Sameer Rizvi",
+                "max_lakhs": 100,
+                "reason": "uncapped Indian bat"
+            },
+            {
+                "name": "Shreyas Iyer",
+                "max_lakhs": 1500,
+                "reason": "marquee Indian captain option"
+            },
+            {
+                "name": "Rishabh Pant",
+                "max_lakhs": 1600,
+                "reason": "former DC captain reunion"
+            },
+            {
+                "name": "Arshdeep Singh",
+                "max_lakhs": 1000,
+                "reason": "Indian pace attack"
+            },
+            {
+                "name": "Jos Buttler",
+                "max_lakhs": 1000,
+                "reason": "overseas WK-batter option"
+            }
+        ],
+        "strategy": "Build around KL Rahul captaincy + premium overseas pace attack"
+    },
+    "PBKS": {
+        "primary": [
+            {
+                "name": "Shreyas Iyer",
+                "max_lakhs": 2700,
+                "reason": "franchise captain marquee buy"
+            },
+            {
+                "name": "Arshdeep Singh",
+                "max_lakhs": 1825,
+                "reason": "India T20 death bowler"
+            },
+            {
+                "name": "Yuzvendra Chahal",
+                "max_lakhs": 1825,
+                "reason": "premium leg spinner"
+            },
+            {
+                "name": "Marcus Stoinis",
+                "max_lakhs": 600,
+                "reason": "overseas power-hitting allrounder"
+            },
+            {
+                "name": "Glenn Maxwell",
+                "max_lakhs": 500,
+                "reason": "overseas allrounder experience"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Lockie Ferguson",
+                "max_lakhs": 400,
+                "reason": "overseas express pace"
+            },
+            {
+                "name": "Musheer Khan",
+                "max_lakhs": 100,
+                "reason": "young Indian bat"
+            },
+            {
+                "name": "Priyansh Arya",
+                "max_lakhs": 150,
+                "reason": "Indian bat depth"
+            },
+            {
+                "name": "Harpreet Brar",
+                "max_lakhs": 150,
+                "reason": "spin allrounder former PBKS"
+            },
+            {
+                "name": "Rishabh Pant",
+                "max_lakhs": 2000,
+                "reason": "franchise-defining WK-batter"
+            },
+            {
+                "name": "KL Rahul",
+                "max_lakhs": 1100,
+                "reason": "former PBKS captain reunion"
+            },
+            {
+                "name": "Jos Buttler",
+                "max_lakhs": 1200,
+                "reason": "explosive overseas WK-batter"
+            }
+        ],
+        "strategy": "Biggest purse \u2192 go all-in on Indian superstars + rebuild from scratch"
+    },
+    "RR": {
+        "primary": [
+            {
+                "name": "Jofra Archer",
+                "max_lakhs": 1275,
+                "reason": "express pace, former RR icon"
+            },
+            {
+                "name": "Wanindu Hasaranga",
+                "max_lakhs": 450,
+                "reason": "overseas leg-spin allrounder"
+            },
+            {
+                "name": "Maheesh Theekshana",
+                "max_lakhs": 425,
+                "reason": "mystery overseas spinner"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Shimron Hetmyer",
+                "max_lakhs": 350,
+                "reason": "finisher overseas bat"
+            },
+            {
+                "name": "Tushar Deshpande",
+                "max_lakhs": 200,
+                "reason": "Indian pace depth"
+            },
+            {
+                "name": "Shubham Dubey",
+                "max_lakhs": 75,
+                "reason": "uncapped Indian bat"
+            },
+            {
+                "name": "Kumar Kartikeya",
+                "max_lakhs": 100,
+                "reason": "Indian spin option"
+            },
+            {
+                "name": "Vaibhav Suryavanshi",
+                "max_lakhs": 125,
+                "reason": "youngest-ever IPL signing"
+            }
+        ],
+        "strategy": "Smart value buys around Sanju/Buttler/Chahal retained core"
+    },
+    "SRH": {
+        "primary": [
+            {
+                "name": "Ishan Kishan",
+                "max_lakhs": 1150,
+                "reason": "explosive WK-batter"
+            },
+            {
+                "name": "Mohammad Shami",
+                "max_lakhs": 1025,
+                "reason": "premium Indian pace"
+            },
+            {
+                "name": "Harshal Patel",
+                "max_lakhs": 825,
+                "reason": "death bowling allrounder"
+            },
+            {
+                "name": "Abhinav Manohar",
+                "max_lakhs": 350,
+                "reason": "middle-order Indian bat"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Adam Zampa",
+                "max_lakhs": 275,
+                "reason": "overseas leg-spinner"
+            },
+            {
+                "name": "Rahul Chahar",
+                "max_lakhs": 200,
+                "reason": "Indian leg-spinner"
+            },
+            {
+                "name": "Atharva Taide",
+                "max_lakhs": 75,
+                "reason": "uncapped Indian bat"
+            },
+            {
+                "name": "Simarjeet Singh",
+                "max_lakhs": 75,
+                "reason": "Indian pace depth"
+            }
+        ],
+        "strategy": "Fill WK gap + Indian pace around Head/Cummins/Abhishek retained core"
+    },
+    "GT": {
+        "primary": [
+            {
+                "name": "Jos Buttler",
+                "max_lakhs": 1600,
+                "reason": "franchise overseas WK-batter"
+            },
+            {
+                "name": "Mohammad Siraj",
+                "max_lakhs": 1250,
+                "reason": "Indian pace spearhead"
+            },
+            {
+                "name": "Kagiso Rabada",
+                "max_lakhs": 1100,
+                "reason": "overseas pace premium"
+            },
+            {
+                "name": "Washington Sundar",
+                "max_lakhs": 350,
+                "reason": "spin allrounder"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Rahul Tewatia",
+                "max_lakhs": 400,
+                "reason": "finisher former GT hero"
+            },
+            {
+                "name": "Shahrukh Khan",
+                "max_lakhs": 200,
+                "reason": "Indian power-hitter"
+            },
+            {
+                "name": "Nishant Sindhu",
+                "max_lakhs": 50,
+                "reason": "uncapped allrounder"
+            },
+            {
+                "name": "Gerald Coetzee",
+                "max_lakhs": 225,
+                "reason": "SA pace option"
+            },
+            {
+                "name": "Arshdeep Singh",
+                "max_lakhs": 1200,
+                "reason": "Indian pace premium"
+            },
+            {
+                "name": "Yuzvendra Chahal",
+                "max_lakhs": 900,
+                "reason": "spin attack premium"
+            },
+            {
+                "name": "Mitchell Starc",
+                "max_lakhs": 1100,
+                "reason": "premium overseas left-arm pace"
+            }
+        ],
+        "strategy": "Premium overseas buys + Indian pace around Gill/Rashid retained core"
+    },
+    "LSG": {
+        "primary": [
+            {
+                "name": "Rishabh Pant",
+                "max_lakhs": 2750,
+                "reason": "franchise-defining WK-batter captain"
+            },
+            {
+                "name": "Avesh Khan",
+                "max_lakhs": 1000,
+                "reason": "Indian pace strike bowler"
+            },
+            {
+                "name": "David Miller",
+                "max_lakhs": 775,
+                "reason": "finisher overseas"
+            },
+            {
+                "name": "Mitchell Marsh",
+                "max_lakhs": 375,
+                "reason": "overseas allrounder captain material"
+            },
+            {
+                "name": "Akash Deep",
+                "max_lakhs": 825,
+                "reason": "Indian pace depth"
+            }
+        ],
+        "fallback": [
+            {
+                "name": "Abdul Samad",
+                "max_lakhs": 450,
+                "reason": "Indian finisher"
+            },
+            {
+                "name": "Aiden Markram",
+                "max_lakhs": 225,
+                "reason": "SA bat/spin option"
+            },
+            {
+                "name": "Shahbaz Ahmed",
+                "max_lakhs": 150,
+                "reason": "spin allrounder"
+            },
+            {
+                "name": "Shamar Joseph",
+                "max_lakhs": 100,
+                "reason": "West Indies pace prospect"
+            },
+            {
+                "name": "Shreyas Iyer",
+                "max_lakhs": 1200,
+                "reason": "marquee Indian batter option"
+            },
+            {
+                "name": "KL Rahul",
+                "max_lakhs": 1300,
+                "reason": "former LSG captain reunion"
+            },
+            {
+                "name": "Jos Buttler",
+                "max_lakhs": 1100,
+                "reason": "franchise overseas bat"
+            }
+        ],
+        "strategy": "Go all-in on Rishabh Pant as franchise cornerstone, then value-fill"
+    }
+}

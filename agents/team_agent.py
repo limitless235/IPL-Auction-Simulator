@@ -1,8 +1,18 @@
+import json
+import os
 import random
-from typing import Dict
+from typing import Dict, Optional
 from pydantic import BaseModel
 from engine.state import Player, Team
 from tools.valuation_filter import ValuationFilter
+
+# Load team hit lists (named-player targets from real auction data)
+_HITLIST_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'team_hitlists.json')
+try:
+    with open(_HITLIST_PATH) as _f:
+        TEAM_HITLISTS = json.load(_f)
+except (FileNotFoundError, json.JSONDecodeError):
+    TEAM_HITLISTS = {}
 
 
 class AgentDecision(BaseModel):
@@ -33,6 +43,21 @@ class TeamAgent:
         self.team = team
         self.personality = personality
         self.blueprint = SQUAD_BLUEPRINTS.get(team.id, DEFAULT_BLUEPRINT)
+        
+        # Named-player hit lists — apply ±35% jitter for significant cross-run variance
+        hitlist_data = TEAM_HITLISTS.get(team.id, {})
+        self.primary_targets = {}
+        for t in hitlist_data.get("primary", []):
+            jitter = random.uniform(0.65, 1.35)
+            self.primary_targets[t["name"]] = int(t["max_lakhs"] * 100000 * jitter)
+        self.fallback_targets = {}
+        for t in hitlist_data.get("fallback", []):
+            jitter = random.uniform(0.65, 1.35)
+            self.fallback_targets[t["name"]] = int(t["max_lakhs"] * 100000 * jitter)
+        
+        # Compensatory escalation state
+        self.lost_targets = []        # Names of primary targets lost to other teams
+        self.compensatory_urgency = 0.0  # 0-1 scale, increases when losing targets
 
     def get_role_gap(self, role: str) -> float:
         """
@@ -77,14 +102,31 @@ class TeamAgent:
                 
         return result
 
+    def get_hitlist_info(self, player_name: str) -> dict:
+        """Check if a player is on this team's hit list.
+        Returns {"on_list": bool, "tier": "primary"/"fallback"/None, "max_price": int}
+        """
+        if player_name in self.primary_targets:
+            return {"on_list": True, "tier": "primary", "max_price": self.primary_targets[player_name]}
+        if player_name in self.fallback_targets:
+            return {"on_list": True, "tier": "fallback", "max_price": self.fallback_targets[player_name]}
+        return {"on_list": False, "tier": None, "max_price": 0}
+
+    def record_lost_target(self, player_name: str, player_role: str):
+        """Called when a primary target is won by another team.
+        Triggers compensatory urgency for the next similar-role player."""
+        if player_name in self.primary_targets:
+            self.lost_targets.append({"name": player_name, "role": player_role})
+            # Each lost primary target adds 0.15 urgency (caps at 0.5)
+            self.compensatory_urgency = min(0.5, self.compensatory_urgency + 0.15)
+
     def compute_valuation(self, player: Player, state) -> float:
         # Base valuation from existing filter
         scarcity = 1.0
         filter_tool = ValuationFilter(self.team, player, self.personality, scarcity)
         
-        # Calculate per-team hype noise (Step 4 of Hype requirement)
+        # Calculate per-team hype noise
         import hashlib
-        import random
         seed_str = f"{self.team.name}_{player.id}"
         seed = int(hashlib.md5(seed_str.encode()).hexdigest(), 16) % 1000000
         team_rng = random.Random(seed)
@@ -99,7 +141,33 @@ class TeamAgent:
         # Restore original hype score
         player.hype_score = original_hype
 
-        # Apply Task 2 Lookahead Enhancements
+        # Per-evaluation random noise (±12%) — adds variance without crushing valuations
+        eval_noise = random.uniform(0.88, 1.12)
+        base_valuation = int(base_valuation * eval_noise)
+
+        # --- HIT LIST SOFT INFLUENCE ---
+        # Hit lists guide, not guarantee. Blend base valuation with ceiling.
+        hit_info = self.get_hitlist_info(player.name)
+        if hit_info["on_list"]:
+            ceiling = hit_info["max_price"]
+            if hit_info["tier"] == "primary":
+                # Primary: 40% base + 60% ceiling — strong pull toward real auction price
+                blended = int(base_valuation * 0.40 + ceiling * 0.60)
+                base_valuation = max(base_valuation, blended)
+            elif hit_info["tier"] == "fallback":
+                # Fallback: 65% base + 35% ceiling — moderate preference
+                blended = int(base_valuation * 0.65 + ceiling * 0.35)
+                base_valuation = max(base_valuation, blended)
+
+        # --- COMPENSATORY ESCALATION ---
+        if self.compensatory_urgency > 0 and not hit_info["on_list"]:
+            # If we lost targets, boost similar-role players
+            lost_roles = [t["role"] for t in self.lost_targets]
+            if player.role in lost_roles:
+                escalation = 1.0 + self.compensatory_urgency
+                base_valuation = int(base_valuation * escalation)
+
+        # Apply Lookahead Enhancements
         scarcity_multiplier = ValuationFilter.compute_scarcity_multiplier(player.role, state)
         base_valuation = int(base_valuation * scarcity_multiplier)
         
@@ -107,9 +175,11 @@ class TeamAgent:
         effective_budget = max(0, self.team.remaining_budget - reserve)
         base_valuation = min(base_valuation, effective_budget)
         
-        queue_info = self.scan_upcoming_queue(player.role, state)
-        if queue_info["better_player_upcoming"] and queue_info["better_player_base_price"] < self.team.remaining_budget * 0.35:
-            base_valuation = int(base_valuation * 0.75) # Patience discount
+        # Patience discount — BUT not for hit list targets
+        if not hit_info["on_list"]:
+            queue_info = self.scan_upcoming_queue(player.role, state)
+            if queue_info["better_player_upcoming"] and queue_info["better_player_base_price"] < self.team.remaining_budget * 0.35:
+                base_valuation = int(base_valuation * 0.75)
             
         return base_valuation
 

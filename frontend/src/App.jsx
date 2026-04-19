@@ -510,7 +510,7 @@ export default function App() {
             <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
               <LiveBidPanel
                 auction={auction}
-                humanTeam={auction.human_team}
+                humanTeam={humanTeam || null}
                 teams={teams}
                 onBid={(amt) => sendHumanAction("bid", amt)}
                 onPass={() => sendHumanAction("pass")}

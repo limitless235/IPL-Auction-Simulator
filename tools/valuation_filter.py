@@ -17,11 +17,11 @@ class ValuationFilter:
         remaining = [p for p in state.unsold_players if p.role == role]
         count = len(remaining)
         if count == 1:
-            return 2.0
+            return 1.5
         elif count <= 3:
-            return 1.7
+            return 1.3
         elif count <= 6:
-            return 1.4
+            return 1.15
         return 1.0
 
     @staticmethod
@@ -92,25 +92,26 @@ class ValuationFilter:
         return 1.0
 
     def calculate_max_price(self, state=None) -> int:
-        # Post-retention calibrated tier bases
-        # Tier 1 = franchise-defining (Pant, Shreyas, Starc)
-        # Tier 2 = solid starters (Chahal, Curran, Jansen)
-        # Tier 3 = squad depth, Tier 4 = filler/uncapped
-        tier_base = {1: 35000000, 2: 7000000, 3: 2500000, 4: 1000000}
-        base_val = tier_base.get(self.player.tier, 4000000)
+        # Post-retention calibrated tier bases (2025 mega auction price levels)
+        # Tier 1 = franchise-defining (Pant, Shreyas, Starc) → ₹15-27Cr
+        # Tier 2 = quality starters (Chahal, Curran, Jansen) → ₹5-12Cr
+        # Tier 3 = squad depth → ₹1.5-4Cr
+        # Tier 4 = filler/uncapped → ₹0.3-1Cr
+        tier_base = {1: 80000000, 2: 25000000, 3: 8000000, 4: 3000000}
+        base_val = tier_base.get(self.player.tier, 5000000)
 
-        # Star and brand value boost
+        # Star and brand value boost (increased to create superstar separation)
         if self.player.is_star:
-            base_val += int(self.personality["star_bias"] * 22000000)
-        base_val += int(self.player.brand_value * self.personality["star_bias"] * 14000000)
+            base_val += int(self.personality["star_bias"] * 40000000)
+        base_val += int(self.player.brand_value * self.personality["star_bias"] * 25000000)
 
         # Recent form adjustment
-        form_multiplier = 0.7 + (self.player.recent_form * 0.6)
+        form_multiplier = 0.75 + (self.player.recent_form * 0.5)
         base_val = int(base_val * form_multiplier)
 
         # Youth and Hype bias
         if self.player.is_youth or self.player.age < 23:
-            youth_base = int(self.personality["youth_bias"] * 12000000)
+            youth_base = int(self.personality["youth_bias"] * 15000000)
             if self.player.tier <= 2:
                 hype_multiplier = 1.0 + (self.player.hype_score * self.personality.get("youth_bias", 0.3) * 1.8)
                 youth_base = int(youth_base * hype_multiplier)
@@ -118,7 +119,7 @@ class ValuationFilter:
 
         # Veteran bias
         if self.player.age > 30:
-            base_val += int(self.personality["veteran_bias"] * 8000000)
+            base_val += int(self.personality["veteran_bias"] * 10000000)
 
         # Specialist need multiplier
         specialist_mult = self.compute_specialist_need(self.player, self.team)
@@ -130,25 +131,25 @@ class ValuationFilter:
 
         # Pace and spin bias
         if self.player.pace_bowler:
-            base_val += int(self.personality["pace_bias"] * 10000000)
+            base_val += int(self.personality["pace_bias"] * 12000000)
         if self.player.spin_bowler:
-            base_val += int(self.personality["spin_bias"] * 10000000)
+            base_val += int(self.personality["spin_bias"] * 12000000)
 
-        # Allrounder bias
+        # Allrounder bias (reduced to prevent mid-tier allrounder inflation)
         if self.player.role == "all_rounder":
-            base_val += int(self.personality["allrounder_bias"] * 12000000)
+            base_val += int(self.personality["allrounder_bias"] * 8000000)
 
         # Scarcity adjustment
         if self.scarcity_index < 0.4:
-            base_val = int(base_val * (1 + self.personality["scarcity_sensitivity"] * 0.25))
+            base_val = int(base_val * (1 + self.personality["scarcity_sensitivity"] * 0.2))
 
         # Squad need adjustment
         squad_need = self._get_squad_need_score()
         if squad_need > 0.8:
-            base_val = int(base_val * (1 + self.personality["role_urgency_weight"] * 0.4))
+            base_val = int(base_val * (1 + self.personality["role_urgency_weight"] * 0.3))
 
         # Aggression multiplier
-        max_price = int(base_val * (1 + self.personality["aggression"] * 0.4))
+        max_price = int(base_val * (1 + self.personality["aggression"] * 0.35))
 
         # Tier-based budget ceiling multiplier
         slots_needed = max(1, self.team.min_squad_size - self.team.squad_size)
@@ -180,10 +181,11 @@ class ValuationFilter:
         max_price = min(max_price, int(avg_slot_budget * multiplier * self.personality["price_tolerance"] * conservatism_factor))
 
         # HARD CAP based on remaining budget percentage
+        # Floor ensures smaller-budget teams can still compete on marquee names
         if self.player.brand_value >= 0.9 and self.player.is_star:
-            hard_cap = int(self.team.remaining_budget * 0.35)
+            hard_cap = max(int(self.team.remaining_budget * 0.35), 150000000)  # min ₹15Cr
         elif self.player.brand_value >= 0.8:
-            hard_cap = int(self.team.remaining_budget * 0.22)
+            hard_cap = max(int(self.team.remaining_budget * 0.25), 80000000)   # min ₹8Cr
         else:
             hard_cap = int(self.team.remaining_budget * 0.12)
         max_price = min(max_price, hard_cap)

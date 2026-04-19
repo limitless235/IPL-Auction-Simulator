@@ -114,6 +114,10 @@ class AuctionOrchestrator:
                         "text": f"{player.name} SOLD to {state.highest_bidder} for ₹{round(current_bid / 100000)}L" + (" (Accelerated)" if state.is_accelerated_phase else ""),
                         "event_type": "sold"
                     })
+                # Notify all OTHER teams they lost this target (compensatory escalation)
+                for tid, agent in self.team_agents.items():
+                    if tid != state.highest_bidder:
+                        agent.record_lost_target(player.name, player.role)
                 self.engine.next_player()
                 self.memory.update_scarcity_index(
                     self.engine.state.unsold_players,
