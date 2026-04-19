@@ -85,6 +85,9 @@ class AuctionOrchestrator:
                 )
                 if self.snapshot_cb:
                     self.snapshot_cb()
+                if not test_mode:
+                    speed = self.get_speed_cb() if self.get_speed_cb else "normal"
+                    time.sleep(0.2 if speed == "normal" else 0.05)
                 continue
 
             if len(active) == 1 and state.highest_bidder == active[0]:
@@ -166,6 +169,9 @@ class AuctionOrchestrator:
                 self._scan_for_desperation_crisis()
                 if self.snapshot_cb:
                     self.snapshot_cb()
+                if not test_mode:
+                    speed = self.get_speed_cb() if self.get_speed_cb else "normal"
+                    time.sleep(0.5 if speed == "normal" else 0.1)
                 continue
 
             # Full round-robin through all active bidders
@@ -373,7 +379,8 @@ class AuctionOrchestrator:
             # Spectator Mode & UI Visibility Delay
             if not test_mode and team_id != self.human_team_id:
                 speed = self.get_speed_cb() if self.get_speed_cb else "normal"
-                delay = 1.2 if speed == "normal" else 0.0001
+                # Increased minimum delay to 0.05s to prevent WebSocket flooding and RAM spikes
+                delay = 1.2 if speed == "normal" else 0.05
                 time.sleep(delay)
             
         elif resp["status"] == "ERROR":

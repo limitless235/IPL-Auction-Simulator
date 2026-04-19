@@ -223,7 +223,7 @@ class AuctionEngine:
         for t_id, t in self.state.teams.items():
             if t.squad_size >= t.max_squad_size:
                 continue
-            slots_to_minimum = max(0, 15 - (t.squad_size + 1))
+            slots_to_minimum = max(0, t.min_squad_size - (t.squad_size + 1))
             required_reserve = slots_to_minimum * MIN_BASE_PRICE
             if (t.remaining_budget - required_reserve) >= player.base_price:
                 self.state.active_bidders.append(t_id)
@@ -273,10 +273,10 @@ class AuctionEngine:
             actual_bid = next_bid
 
         MIN_BASE_PRICE = 2000000
-        slots_to_minimum = max(0, 15 - (team.squad_size + 1))
+        slots_to_minimum = max(0, team.min_squad_size - (team.squad_size + 1))
         required_reserve = slots_to_minimum * MIN_BASE_PRICE
         if actual_bid > (team.remaining_budget - required_reserve):
-            return self._format_response("ERROR", "Next bid increment exceeds effective remaining budget (reserving for playing 15).")
+            return self._format_response("ERROR", f"Next bid increment exceeds effective remaining budget (reserving for min squad of {team.min_squad_size}).")
 
         if team.squad_size >= team.max_squad_size:
             return self._format_response("ERROR", "Team squad is already full.")

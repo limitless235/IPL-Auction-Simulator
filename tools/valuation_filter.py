@@ -53,7 +53,7 @@ class ValuationFilter:
           reservation = 170L × 0.85 = ₹1.45 Cr
           vs old flat: 5 × 20L = ₹1.0 Cr — dangerously low.
         """
-        slots_needed = max(0, 15 - team.squad_size)
+        slots_needed = max(0, team.min_squad_size - team.squad_size)
         if slots_needed == 0:
             return 0
 
@@ -350,7 +350,7 @@ class ValuationFilter:
         next_bid = get_next_bid(current_bid)
         
         MIN_BASE_PRICE = 2000000
-        slots_to_minimum = max(0, 15 - (self.team.squad_size + 1))
+        slots_to_minimum = max(0, self.team.min_squad_size - (self.team.squad_size + 1))
         required_reserve = slots_to_minimum * MIN_BASE_PRICE
         if next_bid > (self.team.remaining_budget - required_reserve):
             return True

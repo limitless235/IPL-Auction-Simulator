@@ -19,6 +19,8 @@ from store.memory import MemoryStore
 from engine.state import AuctionState, Player, Team
 from agents.team_agent import TeamAgent
 from agents.orchestrator import AuctionOrchestrator
+from tools.valuation_filter import ValuationFilter
+from engine.auction_engine import get_next_bid
 
 app = FastAPI(title="IPL Auction Simulator API")
 
@@ -266,7 +268,6 @@ async def get_full_state():
     auction_state["current_bid"] = round(_auction_state.current_bid / 100000) if getattr(_auction_state, "current_bid", 0) else 0
     auction_state["current_bid_team"] = getattr(_auction_state, "highest_bidder", None)
     
-    from engine.auction_engine import get_next_bid
     next_bid_val = get_next_bid(_auction_state.current_bid) if _auction_state.current_bid else (_auction_state.current_player.base_price if _auction_state.current_player else 0)
     auction_state["next_bid"] = round(next_bid_val / 100000)
         
@@ -291,7 +292,6 @@ async def get_full_state():
     teams_list = list(_auction_state.teams.values())
 
     # Compute reservation pressure per team
-    from tools.valuation_filter import ValuationFilter
     team_reservation_pressure = {}
     for t in teams_list:
         if t.remaining_budget > 0:

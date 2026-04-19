@@ -191,6 +191,12 @@ class TeamAgent:
             # Re-cap against absolute budget (can't bid more than you have)
             base_valuation = min(base_valuation, self.team.remaining_budget)
 
+        # --- DEPTH PENALTY ---
+        # If the squad is already mostly full (>= 20 players), be EXTREMELY picky
+        # unless it's a star or a primary target. Prevents filler-bloat.
+        if self.team.squad_size >= 20 and not player.is_star and not hit_info["on_list"]:
+            base_valuation = int(base_valuation * 0.4)
+
         return base_valuation
 
     def should_invoke_rtm(self, player: Player, current_bid: int, state) -> bool:
@@ -305,7 +311,8 @@ class TeamAgent:
             return AgentDecision(decision="PASS")
         if self.team.squad_size >= self.team.max_squad_size:
             return AgentDecision(decision="PASS")
-        if player.nationality == "overseas" and self.team.overseas_slots_used >= 4:
+        # Overseas slot check — IPL allows 8 in squad
+        if player.nationality == "overseas" and self.team.overseas_slots_used >= 8:
             return AgentDecision(decision="PASS")
 
         # Blueprint hard stop — if role is full, never bid (unless they are a massive superstar)
@@ -462,7 +469,15 @@ class TeamAgent:
             # Composite score: role gap urgency + quality
             quality = player.brand_value * 0.3 + (5 - player.tier) / 5 * 0.3 + player.recent_form * 0.2
             urgency = role_gap * self.personality.get("role_urgency_weight", 0.7)
-            total = urgency + quality
+            
+            # --- REALISM: Personality-driven variety ---
+            # Introduce a jitter based on team personality to avoid identical shortlists
+            # Aggressive teams take more risks on low-tier hype, risk-averse teams stick to high-tier only
+            variety_jitter = random.gauss(1.0, 0.15)
+            if player.tier >= 3:
+                variety_jitter *= (1.0 + self.personality.get("disruption_tendency", 0.5) * player.hype_score)
+            
+            total = (urgency + quality) * variety_jitter
             
             # Penalty for bits-and-pieces all-rounders
             if "bits-and-pieces" in player.specialist_tags:
