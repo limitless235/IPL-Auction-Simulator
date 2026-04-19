@@ -375,6 +375,11 @@ export default function App() {
     if (msg.type === "state_snapshot") {
       setState(msg.data);
       if (msg.data.feed) setFeed(msg.data.feed);
+      // Clear hammer warning if the snapshot shows we've moved on
+      setHammerWarning(prev => {
+        if (prev && msg.data.auction?.current_player?.name !== prev.player) return null;
+        return prev;
+      });
     } else if (msg.type === "auction_started") {
       setSetupMode(false);
     } else if (msg.type === "bid_placed" || msg.type === "player_sold" || msg.type === "player_unsold" || msg.type === "rtm_exercised") {
@@ -388,13 +393,13 @@ export default function App() {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, status: msg.type === "auction_paused" ? "paused" : "running" } }));
     } else if (msg.type === "auction_finished") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, status: "finished" } }));
+      setHammerWarning(null);
     } else if (msg.type === "human_decision_needed") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, human_action_pending: true } }));
     } else if (msg.type === "hammer_warning") {
       setHammerWarning(msg);
-    } else if (msg.type === "hammer_final" || msg.type === "player_sold" || msg.type === "player_unsold") {
+    } else if (msg.type === "hammer_final" || msg.type === "player_sold" || msg.type === "player_unsold" || msg.type === "rtm_exercised") {
       setHammerWarning(null);
-      if (msg.text) setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type || "info" }, ...prev]);
     } else if (msg.type === "human_rtm_decision_needed") {
       setRtmDecision(msg);
     } else if (msg.type === "accelerated_phase_pending") {

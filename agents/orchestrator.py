@@ -35,6 +35,9 @@ class AuctionOrchestrator:
 
     def _run_bidding_loop(self, test_mode: bool = False):
         """Core bidding loop — shared between main auction and accelerated phase."""
+        if self.snapshot_cb:
+            self.snapshot_cb()
+
         while True:
             if self.is_paused_cb and self.is_paused_cb():
                 time.sleep(1)
