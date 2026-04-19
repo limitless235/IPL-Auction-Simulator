@@ -3,3 +3,4 @@ endpoint: http://localhost:11434/api/generate
 model: llama3:8b
 temperature: 0.0
 max_tokens: 32
+hammer_delay_seconds: 2

@@ -14,6 +14,7 @@ class MemoryStore:
             "wicket_keeper": 1.0
         }
         self.price_drive_events: list[dict] = []
+        self.desperation_events: list[dict] = []
 
     def _load_profiles(self, path: str) -> dict:
         try:

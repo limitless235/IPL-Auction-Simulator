@@ -85,33 +85,69 @@ class AuctionOrchestrator:
                 continue
 
             if len(active) == 1 and state.highest_bidder == active[0]:
-                # --- RTM LOGIC ---
+                # --- HAMMER WARNING STATE MACHINE ---
+                # Going Once → Going Twice → SOLD!
+                is_spectator = self.human_team_id is None
+                speed = self.get_speed_cb() if self.get_speed_cb else "normal"
+                skip_warnings = is_spectator and speed == "fast"
+                hammer_delay = self._get_hammer_delay() if not skip_warnings else 0
+
+                if not skip_warnings and state.hammer_state == "active":
+                    state.hammer_state = "going_once"
+                    if self.broadcast_cb:
+                        self.broadcast_cb({
+                            "type": "hammer_warning", "stage": "going_once",
+                            "player": player.name,
+                            "current_bid": round(current_bid / 100000),
+                            "current_leader": state.highest_bidder,
+                            "text": f"⚠️ GOING ONCE... {player.name} at ₹{round(current_bid / 100000)}L to {state.highest_bidder}",
+                            "event_type": "info"
+                        })
+                    if self.snapshot_cb:
+                        self.snapshot_cb()
+                    if not test_mode and hammer_delay > 0:
+                        time.sleep(hammer_delay)
+                    continue  # Loop back — give teams a chance to jump in
+
+                if not skip_warnings and state.hammer_state == "going_once":
+                    state.hammer_state = "going_twice"
+                    if self.broadcast_cb:
+                        self.broadcast_cb({
+                            "type": "hammer_warning", "stage": "going_twice",
+                            "player": player.name,
+                            "current_bid": round(current_bid / 100000),
+                            "current_leader": state.highest_bidder,
+                            "text": f"⚠️ GOING TWICE... {player.name} at ₹{round(current_bid / 100000)}L to {state.highest_bidder}",
+                            "event_type": "info"
+                        })
+                    if self.snapshot_cb:
+                        self.snapshot_cb()
+                    if not test_mode and hammer_delay > 0:
+                        time.sleep(hammer_delay)
+                    continue  # One more chance
+
+                # SOLD! (or skip_warnings or already went through both warnings)
+                state.hammer_state = "active"  # Reset for next player
+                # --- RTM FINAL RAISE LOGIC ---
+                resolved_bid = current_bid
                 rtm_team_id = state.rtm_history.get(player.name)
                 if rtm_team_id and rtm_team_id != state.highest_bidder:
-                    rtm_agent = self.team_agents.get(rtm_team_id)
-                    if rtm_agent and rtm_agent.should_invoke_rtm(player, current_bid, state):
-                        print(f"!!! RTM EXERCISED !!! {rtm_team_id} uses RTM to steal {player.name} for {current_bid}.")
-                        rtm_agent.team.rtm_cards -= 1
-                        state.highest_bidder = rtm_team_id
-                        if self.broadcast_cb:
-                            self.broadcast_cb({
-                                "type": "rtm_exercised",
-                                "player": player.name,
-                                "team": rtm_team_id,
-                                "price": round(current_bid / 100000),
-                                "text": f"🃏 RTM EXERCISED! {rtm_team_id} steals {player.name} for ₹{round(current_bid / 100000)}L",
-                                "event_type": "sold"
-                            })
+                    resolved_bid = self._resolve_rtm(
+                        player, state.highest_bidder, rtm_team_id,
+                        current_bid, state, test_mode
+                    )
                 # ---------------------
                 
-                print(f"[SOLD] {player.name} sold to {state.highest_bidder} for {current_bid}.")
+                final_price = resolved_bid
+                self.engine.state.current_bid = final_price
+                print(f"[SOLD] {player.name} sold to {state.highest_bidder} for {final_price}.")
                 if self.broadcast_cb:
                     self.broadcast_cb({
                         "type": "player_sold",
                         "player": player.name,
                         "team": state.highest_bidder,
-                        "price": round(current_bid / 100000),
-                        "text": f"{player.name} SOLD to {state.highest_bidder} for ₹{round(current_bid / 100000)}L" + (" (Accelerated)" if state.is_accelerated_phase else ""),
+                        "price": round(final_price / 100000),
+                        "text": f"{player.name} SOLD to {state.highest_bidder} for ₹{round(final_price / 100000)}L" + (" (Accelerated)" if state.is_accelerated_phase else ""),
                         "event_type": "sold"
                     })
                 # Notify all OTHER teams they lost this target (compensatory escalation)
@@ -123,6 +159,8 @@ class AuctionOrchestrator:
                     self.engine.state.unsold_players,
                     self.engine.state.unsold_players + self.engine.state.sold_players
                 )
+                # --- DESPERATION CRISIS SCAN ---
+                self._scan_for_desperation_crisis()
                 if self.snapshot_cb:
                     self.snapshot_cb()
                 continue
@@ -251,10 +289,28 @@ class AuctionOrchestrator:
                 print(f"  {team_id} shortlists: {names}")
                 shortlisted_names.update(names)
         
-        # Human team shortlist — if human is playing, include top 5 unsold by brand value
+        # Human team shortlist — if human is playing, pause and let them pick
         if self.human_team_id:
-            human_picks = sorted(unsold_pool, key=lambda p: (-p.brand_value, -p.recent_form))[:5]
-            shortlisted_names.update(p.name for p in human_picks)
+            import backend.main as main_module
+            # Send unsold player list to frontend for selection
+            unsold_data = [{"name": p.name, "role": p.role, "base_price": round(p.base_price / 100000),
+                           "specialist_tags": p.specialist_tags} for p in unsold_pool]
+            main_module.sync_broadcast({
+                "type": "accelerated_phase_pending",
+                "unsold_players": unsold_data,
+                "max_selections": 5
+            })
+            main_module.send_state_snapshot()
+            # Wait for human to submit their shortlist
+            main_module.accelerated_shortlist_event.wait()
+            main_module.accelerated_shortlist_event.clear()
+            human_names = main_module.accelerated_shortlist_value or []
+            shortlisted_names.update(human_names)
+            print(f"  HUMAN shortlists: {human_names}")
+        else:
+            # Spectator mode — auto-pick top 5 by brand value
+            auto_picks = sorted(unsold_pool, key=lambda p: (-p.brand_value, -p.recent_form))[:5]
+            shortlisted_names.update(p.name for p in auto_picks)
 
         if not shortlisted_names:
             print("[ACCELERATED] No team shortlisted any player. Phase skipped.")
@@ -296,6 +352,8 @@ class AuctionOrchestrator:
         resp = json.loads(resp_json)
         
         if resp["status"] == "OK" and decision.upper() == "BID":
+            # Reset hammer warnings — a new bid means we restart the sequence
+            self.engine.state.hammer_state = "active"
             if self.broadcast_cb:
                 player = self.engine.state.current_player
                 new_bid = self.engine.state.current_bid
@@ -323,3 +381,213 @@ class AuctionOrchestrator:
     def _log_test(self, test_mode: bool, prefix: str, data: Any):
         if test_mode:
             print(f"[{prefix}] {data}")
+
+    def _resolve_rtm(self, player, buying_team_id: str, rtm_team_id: str,
+                     hammer_price: int, state, test_mode: bool) -> int:
+        """2025 IPL Final Raise RTM flow.
+
+        1. RTM team decides to invoke RTM at hammer_price
+        2. Buying team gets ONE chance to raise by one increment
+        3. If raised, RTM team must match or concede
+        Returns the final resolved price.
+        """
+        rtm_agent = self.team_agents.get(rtm_team_id)
+        buying_agent = self.team_agents.get(buying_team_id)
+
+        # Step 1: Does RTM team want to invoke?
+        if not rtm_agent or not rtm_agent.should_invoke_rtm(player, hammer_price, state):
+            return hammer_price  # No RTM — original sale stands
+
+        price_l = round(hammer_price / 100000)
+        self._log_test(test_mode, "RTM_INVOKED",
+                       f"{rtm_team_id} invokes RTM for {player.name} at ₹{price_l}L")
+        if self.broadcast_cb:
+            self.broadcast_cb({
+                "type": "rtm_exercised",
+                "rtm_stage": "RTM_INVOKED",
+                "player": player.name,
+                "rtm_team": rtm_team_id,
+                "buying_team": buying_team_id,
+                "price": price_l,
+                "text": f"🃏 RTM INVOKED! {rtm_team_id} wants to match ₹{price_l}L for {player.name}",
+                "event_type": "rtm"
+            })
+
+        # Small delay so spectators can see the RTM event
+        if not test_mode:
+            speed = self.get_speed_cb() if self.get_speed_cb else "normal"
+            time.sleep(2.0 if speed == "normal" else 0.2)
+
+        # Step 2: Buying team gets ONE final raise
+        final_raise = None
+        if buying_team_id == self.human_team_id:
+            # Human player decides — handled via WebSocket prompt
+            final_raise = self._human_rtm_decision(
+                player, hammer_price, "final_raise", buying_team_id)
+        elif buying_agent:
+            final_raise = buying_agent.compute_final_raise(
+                player, hammer_price, state)
+
+        if final_raise is None:
+            # Buying team passes — RTM succeeds at original price
+            rtm_agent.team.rtm_cards -= 1
+            state.highest_bidder = rtm_team_id
+            self._log_test(test_mode, "RTM_COMPLETED",
+                           f"{rtm_team_id} takes {player.name} at ₹{price_l}L")
+            if self.broadcast_cb:
+                self.broadcast_cb({
+                    "type": "rtm_exercised",
+                    "rtm_stage": "RTM_COMPLETED",
+                    "player": player.name,
+                    "team": rtm_team_id,
+                    "price": price_l,
+                    "text": f"🃏 RTM COMPLETED! {rtm_team_id} takes {player.name} for ₹{price_l}L",
+                    "event_type": "sold"
+                })
+            return hammer_price
+
+        # Step 3: Buying team raised — RTM team must match or concede
+        raise_l = round(final_raise / 100000)
+        self._log_test(test_mode, "FINAL_RAISE_OFFERED",
+                       f"{buying_team_id} raises to ₹{raise_l}L")
+        if self.broadcast_cb:
+            self.broadcast_cb({
+                "type": "rtm_exercised",
+                "rtm_stage": "FINAL_RAISE_OFFERED",
+                "player": player.name,
+                "buying_team": buying_team_id,
+                "rtm_team": rtm_team_id,
+                "price": raise_l,
+                "text": f"⬆️ FINAL RAISE! {buying_team_id} raises to ₹{raise_l}L — {rtm_team_id} must match or concede",
+                "event_type": "rtm"
+            })
+
+        if not test_mode:
+            speed = self.get_speed_cb() if self.get_speed_cb else "normal"
+            time.sleep(2.0 if speed == "normal" else 0.2)
+
+        # RTM team decides to match or concede
+        rtm_matches = False
+        if rtm_team_id == self.human_team_id:
+            match_response = self._human_rtm_decision(
+                player, final_raise, "match_raise", rtm_team_id)
+            rtm_matches = match_response is not None
+        else:
+            rtm_matches = rtm_agent.should_match_final_raise(
+                player, final_raise, state)
+
+        if rtm_matches:
+            rtm_agent.team.rtm_cards -= 1
+            state.highest_bidder = rtm_team_id
+            state.current_bid = final_raise
+            self._log_test(test_mode, "FINAL_RAISE_MATCHED",
+                           f"{rtm_team_id} MATCHES ₹{raise_l}L")
+            if self.broadcast_cb:
+                self.broadcast_cb({
+                    "type": "rtm_exercised",
+                    "rtm_stage": "FINAL_RAISE_MATCHED",
+                    "player": player.name,
+                    "team": rtm_team_id,
+                    "price": raise_l,
+                    "text": f"🃏 RTM MATCHED! {rtm_team_id} matches ₹{raise_l}L for {player.name}",
+                    "event_type": "sold"
+                })
+            return final_raise
+        else:
+            # RTM conceded — player stays with buying team at raised price
+            state.highest_bidder = buying_team_id
+            state.current_bid = final_raise
+            self._log_test(test_mode, "RTM_CONCEDED",
+                           f"{rtm_team_id} concedes — {buying_team_id} keeps {player.name} at ₹{raise_l}L")
+            if self.broadcast_cb:
+                self.broadcast_cb({
+                    "type": "rtm_exercised",
+                    "rtm_stage": "RTM_CONCEDED",
+                    "player": player.name,
+                    "team": buying_team_id,
+                    "rtm_team": rtm_team_id,
+                    "price": raise_l,
+                    "text": f"❌ RTM CONCEDED! {rtm_team_id} backs off — {buying_team_id} keeps {player.name} at ₹{raise_l}L",
+                    "event_type": "sold"
+                })
+            return final_raise
+
+    def _human_rtm_decision(self, player, price: int, decision_type: str, team_id: str):
+        """Pause and prompt the human player for an RTM-related decision."""
+        import backend.main as main_module
+        from engine.auction_engine import get_next_bid_increment
+
+        main_module.auction_state["human_action_pending"] = True
+        main_module.auction_state["rtm_decision_type"] = decision_type
+        main_module.auction_state["rtm_price"] = round(price / 100000)
+
+        if decision_type == "final_raise":
+            increment = get_next_bid_increment(price)
+            raise_amount = round((price + increment) / 100000)
+            main_module.auction_state["rtm_raise_amount"] = raise_amount
+
+        main_module.sync_broadcast({
+            "type": "human_rtm_decision_needed",
+            "decision_type": decision_type,
+            "player": player.name,
+            "team_id": team_id,
+            "price": round(price / 100000),
+        })
+        main_module.send_state_snapshot()
+
+        main_module.human_action_event.wait()
+        action = main_module.human_action_value.get("action", "pass").upper()
+        main_module.auction_state["human_action_pending"] = False
+        main_module.auction_state.pop("rtm_decision_type", None)
+        main_module.auction_state.pop("rtm_price", None)
+        main_module.auction_state.pop("rtm_raise_amount", None)
+
+        if decision_type == "final_raise" and action == "BID":
+            increment = get_next_bid_increment(price)
+            return price + increment
+        elif decision_type == "match_raise" and action == "BID":
+            return price  # match = accept at that price
+        return None
+
+    def _scan_for_desperation_crisis(self):
+        """After each sale, check if any team has a critical role shortage."""
+        from tools.valuation_filter import MANDATORY_ROLE_MINIMUMS
+        state = self.engine.get_state()
+        remaining_pool = state.unsold_players
+
+        for t_id, team in state.teams.items():
+            # Check wicket-keeper crisis specifically
+            wk_count = team.roles_count.get("wicket_keeper", 0)
+            wk_remaining = sum(1 for p in remaining_pool if p.role == "wicket_keeper")
+            if wk_count == 0 and wk_remaining <= 3:
+                crisis_msg = f"⚠️ CRISIS: {t_id} HAS NO KEEPER — {wk_remaining} remain in pool!"
+                print(crisis_msg)
+                self.memory.desperation_events.append({
+                    "team": t_id, "role": "wicket_keeper",
+                    "remaining_in_pool": wk_remaining
+                })
+                if self.broadcast_cb:
+                    self.broadcast_cb({
+                        "type": "desperation_crisis",
+                        "team": t_id, "role": "WK",
+                        "text": crisis_msg, "event_type": "info"
+                    })
+
+            # Check bowler crisis
+            bowl_count = team.roles_count.get("bowler", 0)
+            bowl_remaining = sum(1 for p in remaining_pool if p.role == "bowler")
+            if bowl_count < 2 and bowl_remaining <= 5:
+                self.memory.desperation_events.append({
+                    "team": t_id, "role": "bowler",
+                    "remaining_in_pool": bowl_remaining
+                })
+
+    def _get_hammer_delay(self) -> float:
+        """Read hammer_delay_seconds from config."""
+        try:
+            import yaml
+            with open("config/llm.yaml") as f:
+                cfg = yaml.safe_load(f)
+            return float(cfg.get("hammer_delay_seconds", 2))
+        except Exception:
+            return 2.0

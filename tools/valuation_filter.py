@@ -2,6 +2,14 @@
 from typing import Dict
 from engine.state import Player, Team
 
+# Mandatory minimums for a valid IPL Playing XI
+MANDATORY_ROLE_MINIMUMS = {
+    "wicket_keeper": 1,   # Hard mandatory — cannot field without one
+    "bowler": 4,          # Need at least 4 bowling options
+    "batter": 4,          # Need at least 4 batting options
+    "all_rounder": 1,     # Soft mandatory — important but substitutable
+}
+
 
 class ValuationFilter:
     def __init__(self, team: Team, player: Player,
@@ -26,16 +34,119 @@ class ValuationFilter:
 
     @staticmethod
     def compute_budget_reservation(state, team: Team) -> int:
-        needed = max(0, 15 - team.squad_size)
-        if needed == 0:
+        """Legacy wrapper — delegates to compute_dynamic_reservation."""
+        return ValuationFilter.compute_dynamic_reservation(team, state)
+
+    @staticmethod
+    def compute_dynamic_reservation(team: Team, state) -> int:
+        """Compute budget to reserve for remaining squad slots based on pool quality.
+
+        Instead of a flat ₹20L per empty slot, this examines the actual
+        remaining player pool and estimates realistic cost to fill mandatory
+        roster gaps.
+
+        Worked example (all values in rupees):
+          Team has 10 players, needs 5 more to reach 15 minimum.
+          Team has 3 batters (need 4), 3 bowlers (need 4), 2 AR, 2 WK.
+          Mandatory gaps: need 1 more batter + 1 more bowler from pool.
+          Pool has matching players at base: 50L, 40L, 30L, 25L, 25L = 170L.
+          reservation = 170L × 0.85 = ₹1.45 Cr
+          vs old flat: 5 × 20L = ₹1.0 Cr — dangerously low.
+        """
+        slots_needed = max(0, 15 - team.squad_size)
+        if slots_needed == 0:
             return 0
-            
-        remaining_pool = state.unsold_players
+
+        remaining_pool = list(state.unsold_players) if hasattr(state, 'unsold_players') else []
         if not remaining_pool:
-            return 0
-            
-        avg_cost = sum(p.base_price for p in remaining_pool) / len(remaining_pool)
-        return int(needed * avg_cost)
+            return slots_needed * 2500000  # 25L floor per slot
+
+        # Identify roles the team is still below mandatory minimum
+        needed_roles = set()
+        for role, minimum in MANDATORY_ROLE_MINIMUMS.items():
+            if team.roles_count.get(role, 0) < minimum:
+                needed_roles.add(role)
+
+        # Prioritize players matching needed roles, then fill with best-available
+        role_candidates = sorted(
+            [p for p in remaining_pool if p.role in needed_roles],
+            key=lambda p: -p.base_price
+        )
+        other_candidates = sorted(
+            [p for p in remaining_pool if p.role not in needed_roles],
+            key=lambda p: -p.base_price
+        )
+
+        selected = role_candidates[:slots_needed]
+        if len(selected) < slots_needed:
+            selected.extend(other_candidates[:slots_needed - len(selected)])
+
+        if len(selected) >= slots_needed:
+            reservation = int(sum(p.base_price for p in selected) * 0.85)
+        else:
+            known_cost = int(sum(p.base_price for p in selected) * 0.85)
+            missing = slots_needed - len(selected)
+            reservation = known_cost + (missing * 2500000)
+
+        # Hard floor: at least ₹25L per slot
+        reservation = max(reservation, slots_needed * 2500000)
+        # Hard ceiling: never reserve more than 60% of remaining budget
+        reservation = min(reservation, int(team.remaining_budget * 0.6))
+
+        return reservation
+
+    @staticmethod
+    def compute_desperation_multiplier(player: Player, team: Team, state) -> float:
+        """Exponential desperation multiplier for mandatory role shortfalls.
+
+        When a team has fewer players than the mandatory minimum for a role
+        AND the pool of that role is drying up, this returns a multiplier > 1.0
+        that overrides normal budget caution.
+
+        Formula breakdown:
+          deficit = mandatory_minimum - current_count
+          pool_scarcity = max(0, 1 - remaining_in_pool / 10)  # 0..1
+          base_desperation = 1.0 + deficit × 0.3              # linear base
+          scarcity_amplifier = 1.0 + pool_scarcity²            # exponential when pool shrinks
+          final = base_desperation × scarcity_amplifier        # combined
+          Capped per role: WK=3.5, BOWL=2.5, BAT=2.0, ALL=1.5
+        """
+        role = player.role
+        current_count = team.roles_count.get(role, 0)
+        mandatory_min = MANDATORY_ROLE_MINIMUMS.get(role, 1)
+
+        # If team already meets mandatory minimum — no desperation
+        if current_count >= mandatory_min:
+            return 1.0
+
+        remaining_pool = list(state.unsold_players) if hasattr(state, 'unsold_players') else []
+        remaining_in_pool = sum(1 for p in remaining_pool if p.role == role)
+
+        # Deficit: how far below mandatory minimum
+        deficit = mandatory_min - current_count
+
+        # Pool scarcity: approaches 1.0 as pool dries up
+        pool_scarcity = max(0.0, 1.0 - (remaining_in_pool / 10.0))
+
+        # Linear base: +30% per player short of minimum
+        base_desperation = 1.0 + (deficit * 0.3)
+
+        # Exponential amplifier: grows quadratically as pool shrinks
+        scarcity_amplifier = 1.0 + (pool_scarcity ** 2)
+
+        # Combined
+        final_multiplier = base_desperation * scarcity_amplifier
+
+        # Role-specific hard caps
+        role_caps = {
+            "wicket_keeper": 3.5,  # Keeper shortage is critical
+            "bowler": 2.5,
+            "batter": 2.0,
+            "all_rounder": 1.5,
+        }
+        final_multiplier = min(final_multiplier, role_caps.get(role, 2.0))
+
+        return final_multiplier
 
     def compute_specialist_need(self, player: Player, team: Team) -> float:
         """Returns a multiplier 0.7-1.5 based on how many specialist_tags fill a gap."""

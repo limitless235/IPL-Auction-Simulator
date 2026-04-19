@@ -171,7 +171,8 @@ class TeamAgent:
         scarcity_multiplier = ValuationFilter.compute_scarcity_multiplier(player.role, state)
         base_valuation = int(base_valuation * scarcity_multiplier)
         
-        reserve = ValuationFilter.compute_budget_reservation(state, self.team)
+        # Dynamic budget reservation — smarter than flat ₹20L per slot
+        reserve = ValuationFilter.compute_dynamic_reservation(self.team, state)
         effective_budget = max(0, self.team.remaining_budget - reserve)
         base_valuation = min(base_valuation, effective_budget)
         
@@ -180,7 +181,16 @@ class TeamAgent:
             queue_info = self.scan_upcoming_queue(player.role, state)
             if queue_info["better_player_upcoming"] and queue_info["better_player_base_price"] < self.team.remaining_budget * 0.35:
                 base_valuation = int(base_valuation * 0.75)
-            
+
+        # --- DESPERATION MODE ---
+        # Applied AFTER all other multipliers — overrides budget caution
+        # when team is critically short on a mandatory role
+        desperation = ValuationFilter.compute_desperation_multiplier(player, self.team, state)
+        if desperation > 1.0:
+            base_valuation = int(base_valuation * desperation)
+            # Re-cap against absolute budget (can't bid more than you have)
+            base_valuation = min(base_valuation, self.team.remaining_budget)
+
         return base_valuation
 
     def should_invoke_rtm(self, player: Player, current_bid: int, state) -> bool:
@@ -192,12 +202,40 @@ class TeamAgent:
             
         valuation = self.compute_valuation(player, state)
         if current_bid <= valuation * 1.1:
-            MIN_BASE_PRICE = 2000000
-            slots_to_minimum = max(0, 15 - (self.team.squad_size + 1))
-            required_reserve = slots_to_minimum * MIN_BASE_PRICE
-            if current_bid <= (self.team.remaining_budget - required_reserve):
+            reserve = ValuationFilter.compute_dynamic_reservation(self.team, state)
+            if current_bid <= (self.team.remaining_budget - reserve):
                 return True
         return False
+
+    def compute_final_raise(self, player: Player, rtm_price: int, state) -> int:
+        """2025 IPL Final Raise: after RTM is invoked, the buying team gets
+        ONE chance to raise their bid by exactly one valid increment.
+
+        Returns the raised amount, or None if this team passes (accepts the RTM).
+        """
+        from engine.auction_engine import get_next_bid_increment
+        increment = get_next_bid_increment(rtm_price)
+        final_raise_price = rtm_price + increment
+
+        valuation = self.compute_valuation(player, state)
+        # Only raise if: we value the player above the new price AND can afford it
+        reserve = ValuationFilter.compute_dynamic_reservation(self.team, state)
+        affordable = final_raise_price <= (self.team.remaining_budget - reserve)
+        worth_it = valuation > final_raise_price
+
+        if affordable and worth_it:
+            return final_raise_price
+        return None
+
+    def should_match_final_raise(self, player: Player, final_raise_price: int, state) -> bool:
+        """After the buying team raises, the RTM team decides whether to match
+        the higher price or concede (keeping their RTM card).
+        """
+        valuation = self.compute_valuation(player, state)
+        reserve = ValuationFilter.compute_dynamic_reservation(self.team, state)
+        can_afford = final_raise_price <= (self.team.remaining_budget - reserve)
+        worth_it = final_raise_price <= valuation * 1.1
+        return can_afford and worth_it
 
     def should_price_drive(self, player: Player, current_bid: int, state) -> bool:
         if self.personality.get("aggression", 0.5) <= 0.6:

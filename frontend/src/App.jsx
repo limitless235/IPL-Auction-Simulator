@@ -5,6 +5,7 @@ const WS_URL = "ws://localhost:8000/ws";
 
 const ROLE_COLOR = { BAT: "#3b82f6", BOWL: "#ef4444", ALL: "#f59e0b", WK: "#8b5cf6" };
 const ROLE_LABEL = { BAT: "Batter", BOWL: "Bowler", ALL: "All-rounder", WK: "Keeper" };
+const ROLE_MAP = { batter: "BAT", bowler: "BOWL", all_rounder: "ALL", wicket_keeper: "WK" };
 
 function downloadCSV(filename, rows) {
   const csvContent = rows.map(e => e.join(",")).join("\n");
@@ -159,7 +160,7 @@ function FeedItem({ item }) {
   );
 }
 
-function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed }) {
+function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed, hammerWarning }) {
   const [customBid, setCustomBid] = useState("");
   const player = auction?.current_player;
   const currentBid = auction?.current_bid || 0;
@@ -167,8 +168,9 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed 
   const isHumanTurn = auction?.human_action_pending && humanTeam;
   const nextBid = auction?.next_bid || (currentBid ? Math.round(currentBid * 1.1) : player?.base_price || 0);
   const speed = auction?.speed || "normal";
+  const isSpectator = !humanTeam;
 
-  const speedButton = !humanTeam ? (
+  const speedButton = isSpectator ? (
     <button onClick={onToggleSpeed} style={{
       background: speed === "fast" ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.05)",
       border: `1px solid ${speed === "fast" ? "rgba(245,158,11,0.4)" : "rgba(255,255,255,0.1)"}`,
@@ -180,6 +182,36 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed 
     </button>
   ) : null;
 
+  const hammerBanner = hammerWarning ? (() => {
+    const isGoingTwice = hammerWarning.stage === "going_twice";
+    return (
+      <div style={{
+        background: isGoingTwice ? "rgba(239,68,68,0.15)" : "rgba(245,158,11,0.15)",
+        border: `1px solid ${isGoingTwice ? "rgba(239,68,68,0.4)" : "rgba(245,158,11,0.4)"}`,
+        borderRadius: 8, padding: "10px 14px", marginBottom: 12,
+        animation: isGoingTwice ? "urgency-pulse 0.6s infinite" : "none",
+        textAlign: "center"
+      }}>
+        <div style={{ fontSize: 16, fontWeight: 800, color: isGoingTwice ? "#ef4444" : "#f59e0b" }}>
+          {isGoingTwice ? "⚠️ GOING TWICE..." : "⚠️ GOING ONCE..."}
+        </div>
+        <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>
+          {hammerWarning.player} at ₹{hammerWarning.current_bid}L to {hammerWarning.current_leader}
+        </div>
+        {humanTeam && !isHumanTurn && (
+          <button onClick={() => onBid(nextBid)} style={{
+            marginTop: 8, padding: "8px 20px",
+            background: "linear-gradient(135deg,#ef4444,#dc2626)",
+            border: isGoingTwice ? "2px solid #fca5a5" : "none",
+            borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700,
+            cursor: "pointer",
+            animation: isGoingTwice ? "shake 0.3s infinite" : "none"
+          }}>🚨 LAST CHANCE — Bid ₹{nextBid}L</button>
+        )}
+      </div>
+    );
+  })() : null;
+
   if (!player) return (
     <div style={{ textAlign: "center", padding: "40px 20px", color: "#475569" }}>
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>{speedButton}</div>
@@ -190,6 +222,7 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed 
 
   return (
     <div>
+      {hammerBanner}
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <div style={{ fontSize: 11, color: "#6366f1", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
@@ -227,11 +260,11 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed 
           <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2 }}>Base Price</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: "#e2e8f0" }}>₹{player.base_price}L</div>
         </div>
-        <div style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 8, padding: "10px 14px" }}>
-          <div style={{ fontSize: 10, color: "#b45309", marginBottom: 2 }}>
+        <div style={{ background: hammerWarning ? "rgba(239,68,68,0.15)" : "rgba(245,158,11,0.1)", border: `1px solid ${hammerWarning ? "rgba(239,68,68,0.3)" : "rgba(245,158,11,0.2)"}`, borderRadius: 8, padding: "10px 14px", transition: "all 0.3s" }}>
+          <div style={{ fontSize: 10, color: hammerWarning ? "#ef4444" : "#b45309", marginBottom: 2 }}>
             {currentBid > 0 ? `${leadingTeam || "?"} leads` : "Current Bid"}
           </div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#f59e0b" }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: hammerWarning ? "#ef4444" : "#f59e0b" }}>
             {currentBid > 0 ? `₹${currentBid}L` : "—"}
           </div>
         </div>
@@ -317,10 +350,15 @@ function SummaryView({ teams }) {
 export default function App() {
   const [state, setState] = useState(null);
   const [feed, setFeed] = useState([]);
-  const [tab, setTab] = useState("live");  // live | teams | queue | summary
+  const [tab, setTab] = useState("live");
   const [humanTeam, setHumanTeam] = useState("");
   const [selectedTeam, setSelectedTeam] = useState("");
   const [setupMode, setSetupMode] = useState(true);
+  const [hammerWarning, setHammerWarning] = useState(null);
+  const [rtmDecision, setRtmDecision] = useState(null);
+  const [acceleratedPhase, setAcceleratedPhase] = useState(null);
+  const [accelSelected, setAccelSelected] = useState([]);
+  const [accelTimer, setAccelTimer] = useState(90);
   const feedRef = useRef(null);
 
   const handleWsMessage = useCallback((msg) => {
@@ -342,6 +380,21 @@ export default function App() {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, status: "finished" } }));
     } else if (msg.type === "human_decision_needed") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, human_action_pending: true } }));
+    } else if (msg.type === "hammer_warning") {
+      setHammerWarning(msg);
+    } else if (msg.type === "hammer_final" || msg.type === "player_sold" || msg.type === "player_unsold") {
+      setHammerWarning(null);
+      if (msg.text) setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type || "info" }, ...prev]);
+    } else if (msg.type === "human_rtm_decision_needed") {
+      setRtmDecision(msg);
+    } else if (msg.type === "accelerated_phase_pending") {
+      setAcceleratedPhase(msg);
+      setAccelSelected([]);
+      setAccelTimer(90);
+    } else if (msg.type === "accelerated_shortlist_confirmed") {
+      setAcceleratedPhase(null);
+    } else if (msg.type === "desperation_crisis") {
+      if (msg.text) setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: "info" }, ...prev]);
     }
   }, []);
 
@@ -518,6 +571,7 @@ export default function App() {
                 onBid={(amt) => sendHumanAction("bid", amt)}
                 onPass={() => sendHumanAction("pass")}
                 onToggleSpeed={toggleSpeed}
+                hammerWarning={hammerWarning}
               />
             </div>
 
@@ -643,6 +697,137 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* RTM Decision Modal */}
+      {rtmDecision && humanTeam && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+        }}>
+          <div style={{
+            background: "linear-gradient(135deg, #1e1b4b, #0f172a)",
+            border: "1px solid rgba(168,85,247,0.4)", borderRadius: 16,
+            padding: "32px 40px", maxWidth: 500, width: "90%", textAlign: "center"
+          }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🃏</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#f8fafc", marginBottom: 8 }}>
+              {rtmDecision.decision_type === "final_raise" ? "RTM INVOKED ON YOUR PLAYER!" : "MATCH THE FINAL RAISE?"}
+            </div>
+            <div style={{ fontSize: 14, color: "#94a3b8", marginBottom: 20 }}>
+              {rtmDecision.decision_type === "final_raise"
+                ? `Another team wants to use RTM to take ${rtmDecision.player} at ₹${rtmDecision.price}L. You can raise by one increment to fight back.`
+                : `The buying team raised to ₹${rtmDecision.price}L for ${rtmDecision.player}. Match this price to complete RTM, or concede.`}
+            </div>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+              <button onClick={() => { sendHumanAction("bid"); setRtmDecision(null); }} style={{
+                padding: "12px 28px", background: "linear-gradient(135deg,#7c3aed,#6366f1)",
+                border: "none", borderRadius: 10, color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer"
+              }}>
+                {rtmDecision.decision_type === "final_raise"
+                  ? `⬆️ Raise to ₹${auction?.rtm_raise_amount || "?"}L`
+                  : `✅ Match ₹${rtmDecision.price}L`}
+              </button>
+              <button onClick={() => { sendHumanAction("pass"); setRtmDecision(null); }} style={{
+                padding: "12px 28px", background: "rgba(239,68,68,0.15)",
+                border: "1px solid rgba(239,68,68,0.4)", borderRadius: 10,
+                color: "#ef4444", fontSize: 15, fontWeight: 700, cursor: "pointer"
+              }}>
+                {rtmDecision.decision_type === "final_raise" ? "Accept RTM" : "Concede RTM"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Accelerated Phase Interstitial */}
+      {acceleratedPhase && humanTeam && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.88)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+        }}>
+          <div style={{
+            background: "linear-gradient(135deg, #0f172a, #1e1b4b)",
+            border: "1px solid rgba(99,102,241,0.3)", borderRadius: 16,
+            padding: "28px 36px", maxWidth: 600, width: "95%", maxHeight: "80vh",
+            display: "flex", flexDirection: "column"
+          }}>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <div style={{ fontSize: 14, color: "#6366f1", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                ⚡ ACCELERATED PHASE
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "#f8fafc", marginTop: 6 }}>Build Your Shortlist</div>
+              <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>
+                Select up to {acceleratedPhase.max_selections || 5} unsold players to bring back to auction
+              </div>
+              <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 12 }}>
+                <span style={{ fontSize: 20, fontWeight: 800, color: accelSelected.length > 0 ? "#6366f1" : "#334155" }}>
+                  {accelSelected.length} / {acceleratedPhase.max_selections || 5} selected
+                </span>
+              </div>
+            </div>
+
+            <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
+              {(acceleratedPhase.unsold_players || []).map(p => {
+                const isSelected = accelSelected.includes(p.name);
+                const atMax = accelSelected.length >= (acceleratedPhase.max_selections || 5);
+                return (
+                  <div key={p.name} onClick={() => {
+                    if (isSelected) setAccelSelected(prev => prev.filter(n => n !== p.name));
+                    else if (!atMax) setAccelSelected(prev => [...prev, p.name]);
+                  }} style={{
+                    display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                    background: isSelected ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${isSelected ? "#6366f1" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: 8, cursor: atMax && !isSelected ? "not-allowed" : "pointer",
+                    opacity: atMax && !isSelected ? 0.4 : 1,
+                    transition: "all 0.15s"
+                  }}>
+                    <div style={{
+                      width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                      border: `2px solid ${isSelected ? "#6366f1" : "#334155"}`,
+                      background: isSelected ? "#6366f1" : "transparent",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 13, color: "#fff"
+                    }}>{isSelected ? "✓" : ""}</div>
+                    <Badge role={ROLE_MAP[p.role] || p.role} />
+                    <span style={{ fontSize: 13, color: "#e2e8f0", flex: 1 }}>{p.name}</span>
+                    <span style={{ fontSize: 12, color: "#64748b" }}>₹{p.base_price}L</span>
+                    {p.specialist_tags?.slice(0, 2).map(t => (
+                      <span key={t} style={{ fontSize: 10, color: "#818cf8", background: "rgba(99,102,241,0.1)", padding: "1px 6px", borderRadius: 20 }}>{t}</span>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+
+            <button onClick={async () => {
+              await fetch(`${API}/auction/accelerated-shortlist`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ player_names: accelSelected })
+              });
+              setAcceleratedPhase(null);
+            }} disabled={accelSelected.length === 0} style={{
+              marginTop: 16, padding: "13px 0", width: "100%",
+              background: accelSelected.length > 0 ? "linear-gradient(135deg,#4f46e5,#7c3aed)" : "#1e293b",
+              border: "none", borderRadius: 10, color: accelSelected.length > 0 ? "#fff" : "#475569",
+              fontSize: 15, fontWeight: 700, cursor: accelSelected.length > 0 ? "pointer" : "not-allowed"
+            }}>Confirm Shortlist ({accelSelected.length} players)</button>
+          </div>
+        </div>
+      )}
+
+      {/* CSS Keyframe Animations */}
+      <style>{`
+        @keyframes urgency-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.03); }
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-3px); }
+          75% { transform: translateX(3px); }
+        }
+      `}</style>
     </div>
   );
 }

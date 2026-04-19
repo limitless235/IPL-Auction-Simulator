@@ -101,3 +101,4 @@ class AuctionState(BaseModel):
     
     is_auction_complete: bool = False
     is_accelerated_phase: bool = False
+    hammer_state: str = "active"  # active | going_once | going_twice

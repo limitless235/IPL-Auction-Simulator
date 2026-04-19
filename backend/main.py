@@ -50,6 +50,8 @@ ROLE_MAP = {"batter": "BAT", "bowler": "BOWL", "all_rounder": "ALL", "wicket_kee
 connected_clients: list[WebSocket] = []
 human_action_event = threading.Event()
 human_action_value: Optional[dict] = None
+accelerated_shortlist_event = threading.Event()
+accelerated_shortlist_value: Optional[list] = None
 
 _main_loop = None
 
@@ -226,6 +228,21 @@ async def human_action(req: HumanActionRequest):
     human_action_event.clear()
 
     await broadcast({"type": "human_action_received", "action": req.action, "amount": req.amount})
+    return {"ok": True}
+
+
+class AcceleratedShortlistRequest(BaseModel):
+    player_names: list[str]
+
+@app.post("/auction/accelerated-shortlist")
+async def submit_accelerated_shortlist(req: AcceleratedShortlistRequest):
+    """Human player submits their picks for the accelerated phase (max 5)."""
+    global accelerated_shortlist_value
+    if len(req.player_names) > 5:
+        raise HTTPException(400, "Maximum 5 players allowed")
+    accelerated_shortlist_value = req.player_names
+    accelerated_shortlist_event.set()
+    await broadcast({"type": "accelerated_shortlist_confirmed", "selections": req.player_names})
     return {"ok": True}
 
 
