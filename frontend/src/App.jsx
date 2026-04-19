@@ -193,7 +193,7 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed 
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <div style={{ fontSize: 11, color: "#6366f1", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            {isHumanTurn ? "⚡ Your Turn" : "🔴 Live Now"}
+            {isHumanTurn ? "⚡ Your Turn" : " Live Now"}
           </div>
           {speedButton}
         </div>
@@ -289,7 +289,7 @@ function SummaryView({ teams }) {
         (t.players || []).forEach(p => {
           role_breakdown[p.role] = (role_breakdown[p.role] || 0) + 1;
         });
-        
+
         return (
           <div key={t.name} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 16px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -332,7 +332,7 @@ export default function App() {
     } else if (msg.type === "bid_placed" || msg.type === "player_sold" || msg.type === "player_unsold" || msg.type === "rtm_exercised") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, ...msg } }));
       if (msg.text) {
-          setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type || "info" }, ...prev]);
+        setFeed(prev => [{ time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }), text: msg.text, type: msg.event_type || "info" }, ...prev]);
       }
     } else if (msg.type === "speed_changed") {
       setState(prev => ({ ...prev, auction: { ...prev?.auction, speed: msg.speed } }));
@@ -351,7 +351,7 @@ export default function App() {
     fetch(`${API}/state`).then(r => r.json()).then(data => {
       setState(data);
       if (data.feed) setFeed(data.feed);
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
 
@@ -412,12 +412,12 @@ export default function App() {
   };
 
   const TABS = [
-    { id: "live", label: "🔴 Live" },
-    { id: "teams", label: "🏟 Teams" },
-    { id: "queue", label: "📋 Queue" },
-    { id: "summary", label: "📊 Summary" },
+    { id: "live", label: "Live" },
+    { id: "teams", label: "Teams" },
+    { id: "queue", label: "Queue" },
+    { id: "summary", label: "Summary" },
   ];
-  
+
   const activeTeamForSquad = selectedTeam || auction.human_team;
 
   return (
@@ -434,7 +434,7 @@ export default function App() {
         position: "sticky", top: 0, zIndex: 100
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ fontSize: 22 }}>🏏</div>
+          <div style={{ fontSize: 22 }}></div>
           <div>
             <div style={{ fontSize: 15, fontWeight: 800, color: "#f8fafc", letterSpacing: "-0.02em" }}>IPL Auction</div>
             <div style={{ fontSize: 10, color: "#475569", letterSpacing: "0.08em" }}>SIMULATOR 2025</div>
@@ -472,7 +472,7 @@ export default function App() {
             background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: 16, padding: "40px 48px", maxWidth: 440, width: "100%", textAlign: "center"
           }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🏏</div>
+            <div style={{ fontSize: 48, marginBottom: 16 }}></div>
             <div style={{ fontSize: 26, fontWeight: 800, color: "#f8fafc", marginBottom: 8 }}>IPL Auction 2025</div>
             <div style={{ fontSize: 14, color: "#64748b", marginBottom: 32 }}>221 players · 10 teams · ₹1200L budget each</div>
 
@@ -486,8 +486,8 @@ export default function App() {
                 }}
               >
                 <option value="">Watch only (spectator)</option>
-                {["Mumbai Indians","Chennai Super Kings","Royal Challengers Bangalore","Kolkata Knight Riders",
-                  "Delhi Capitals","Rajasthan Royals","Sunrisers Hyderabad","Punjab Kings","Gujarat Titans","Lucknow Super Giants"
+                {["Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders",
+                  "Delhi Capitals", "Rajasthan Royals", "Sunrisers Hyderabad", "Punjab Kings", "Gujarat Titans", "Lucknow Super Giants"
                 ].map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
