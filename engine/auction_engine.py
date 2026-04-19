@@ -283,7 +283,7 @@ class AuctionEngine:
 
         player = self.state.current_player
         if player.nationality == "overseas":
-            if team.overseas_slots_used >= 4:
+            if team.overseas_slots_used >= 8:
                 return self._format_response("ERROR",
                     "Team has no overseas slots remaining.")
 
