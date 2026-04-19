@@ -321,6 +321,11 @@ class TeamAgent:
         
         drive_limit = min(target_price, max_own_risk)
         
+        # Absolute Market Ceiling for price driving
+        ABSOLUTE_CEILING = 300000000
+        if drive_limit > ABSOLUTE_CEILING:
+            drive_limit = ABSOLUTE_CEILING
+            
         # Find highest valid increment below drive_limit
         simulated_bid = current_bid
         while True:

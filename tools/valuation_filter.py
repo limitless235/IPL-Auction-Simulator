@@ -274,13 +274,6 @@ class ValuationFilter:
         redundancy_mult = self.compute_redundancy_penalty(self.player, self.team)
         base_val = int(base_val * redundancy_mult)
 
-        # --- ABSOLUTE SANITY CAP ---
-        # 2025 Market Ceiling: No player is worth more than 30 Cr to any team.
-        # This ensures teams have budget for a full 18-25 member squad.
-        ABSOLUTE_CEILING = 300000000 
-        if base_val > ABSOLUTE_CEILING:
-            base_val = ABSOLUTE_CEILING
-
         # Pace and spin bias
         if self.player.pace_bowler:
             base_val += int(self.personality["pace_bias"] * 12000000)
@@ -348,6 +341,13 @@ class ValuationFilter:
 
         if self.team.squad_size < 15:
             max_price = max(max_price, self.player.base_price)
+
+        # --- ABSOLUTE SANITY CAP ---
+        # 2025 Market Ceiling: No single player is worth more than 30 Cr.
+        # This ensures teams have budget for a full 18-25 member squad.
+        ABSOLUTE_CEILING = 300000000 
+        if max_price > ABSOLUTE_CEILING:
+            max_price = ABSOLUTE_CEILING
 
         return max_price
 
