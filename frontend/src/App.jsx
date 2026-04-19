@@ -96,7 +96,7 @@ function TeamCard({ team, isHuman, isHighBidder, isSelected, onClick }) {
           <div style={{ fontSize: 10, color: "#64748b", display: "flex", alignItems: "center", gap: 6 }}>
             <span>{team.players?.length || 0} players</span>
             {team.reservation_pressure > 0 && (
-              <span style={{ 
+              <span style={{
                 color: team.reservation_pressure > 0.7 ? "#ef4444" : team.reservation_pressure > 0.4 ? "#f59e0b" : "#64748b",
                 fontWeight: 600, fontSize: 9
               }}>
@@ -203,7 +203,7 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed,
         textAlign: "center"
       }}>
         <div style={{ fontSize: 16, fontWeight: 800, color: isGoingTwice ? "#ef4444" : "#f59e0b" }}>
-          {isGoingTwice ? "⚠️ GOING TWICE..." : "⚠️ GOING ONCE..."}
+          {isGoingTwice ? " GOING TWICE..." : " GOING ONCE..."}
         </div>
         <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>
           {hammerWarning.player} at ₹{hammerWarning.current_bid}L to {hammerWarning.current_leader}
@@ -216,7 +216,7 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed,
             borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700,
             cursor: "pointer",
             animation: isGoingTwice ? "shake 0.3s infinite" : "none"
-          }}>🚨 LAST CHANCE — Bid ₹{nextBid}L</button>
+          }}> LAST CHANCE — Bid ₹{nextBid}L</button>
         )}
       </div>
     );
@@ -225,7 +225,7 @@ function LiveBidPanel({ auction, onBid, onPass, humanTeam, teams, onToggleSpeed,
   if (!player) return (
     <div style={{ textAlign: "center", padding: "40px 20px", color: "#475569" }}>
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>{speedButton}</div>
-      <div style={{ fontSize: 32, marginBottom: 8 }}>🏏</div>
+      <div style={{ fontSize: 32, marginBottom: 8 }}></div>
       <div style={{ fontSize: 14 }}>Waiting for next player…</div>
     </div>
   );
