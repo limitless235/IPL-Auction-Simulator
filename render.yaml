@@ -10,7 +10,7 @@ services:
           name: ipl-auction-db
           property: connectionString
       - key: PUBLIC_URL
-        fromContext: instanceUrl
+        value: "" # Set this to your Render URL (e.g., https://api.onrender.com) after deployment to enable keep-alive
       - key: PYTHON_VERSION
         value: 3.11.6
 
