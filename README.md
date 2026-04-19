@@ -177,11 +177,17 @@ IPLAuctionSimulator/
 
 ## 6. Screenshots and Visuals
 
-![Auction Dashboard Dashboard Placeholder]
-(Add your dashboard screenshot here)
+### Auction Summary
+![Auction Summary](./screenshots/summary.png)
 
-![Team Management Placeholder]
-(Add your team squad screenshot here)
+### Live Bidding and Hammer Warnings
+![Live Bidding](./screenshots/bidding.png)
+
+### Player Pool Queue
+![Player Pool Queue](./screenshots/queue.png)
+
+### Detailed Team Squads
+![Detailed Team Squads](./screenshots/squads.png)
 
 ---
 

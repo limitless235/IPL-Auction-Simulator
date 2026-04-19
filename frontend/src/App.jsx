@@ -555,10 +555,10 @@ export default function App() {
                   borderRadius: 8, padding: "10px 12px", color: "#f1f5f9", fontSize: 14, outline: "none"
                 }}
               >
-                <option value="">Watch only (spectator)</option>
+                <option value="" style={{ background: "#1e293b", color: "#f1f5f9" }}>Watch only (spectator)</option>
                 {["Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders",
                   "Delhi Capitals", "Rajasthan Royals", "Sunrisers Hyderabad", "Punjab Kings", "Gujarat Titans", "Lucknow Super Giants"
-                ].map(t => <option key={t} value={t}>{t}</option>)}
+                ].map(t => <option key={t} value={t} style={{ background: "#1e293b", color: "#f1f5f9" }}>{t}</option>)}
               </select>
             </div>
 
