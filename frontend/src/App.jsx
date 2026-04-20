@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "localhost:8000";
 const IS_HTTPS = window.location.protocol === "https:";
@@ -845,6 +846,7 @@ export default function App() {
           75% { transform: translateX(3px); }
         }
       `}</style>
+      <Analytics />
     </div>
   );
 }
