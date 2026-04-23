@@ -74,10 +74,10 @@ async def on_startup():
     # Initialize Database
     try:
         db.init_db()
-        print("📁 [DATABASE] Tables initialized.")
+        print("[DATABASE] Tables initialized.")
     except Exception as e:
-        print(f"❌ [DATABASE] Initialization failed: {e}")
-        
+        print(f"[DATABASE] Initialization failed: {e}")
+
     # Start Keep-Alive Pinger if PUBLIC_URL is set
     public_url = os.getenv("PUBLIC_URL")
     if public_url:
